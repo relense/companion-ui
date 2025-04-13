@@ -53,14 +53,9 @@ export default function App() {
     });
   };
 
-  const handlePrevious = (questionId: number, answer: string) => {
-    if (step > 0) setStep(step - 1);
-  };
-
   return (
     <OnBoardingView
       handleNext={handleNext}
-      handlePrevious={handlePrevious}
       updateAnswer={updateAnswer}
       step={step}
       questions={questions}

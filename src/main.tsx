@@ -4,9 +4,10 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen.ts";
+import reportWebVitals from "./reportWebVitals.ts";
 
 import "./styles.css";
-import reportWebVitals from "./reportWebVitals.ts";
+import "./lib/fontAwesome.ts";
 
 // Create a new router instance
 const router = createRouter({

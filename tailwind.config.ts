@@ -1,7 +1,7 @@
 import defaultTheme from "tailwindcss/defaultTheme";
-import { type Config } from "tailwindcss";
+import type { Config } from "tailwindcss";
 
-export default {
+const config = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
@@ -30,7 +30,6 @@ export default {
         "influencer-green-super-light": "#fafdfb",
         "influencer-green-dark": "#67E09B",
         "light-red": "#F8F4F4",
-        boxShadow: "#64646f80",
         white: "#ffffff",
       },
       screens: {
@@ -49,3 +48,5 @@ export default {
   },
   plugins: [],
 } satisfies Config;
+
+export default config;
