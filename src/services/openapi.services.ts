@@ -10,7 +10,7 @@ async function getInitialMessage(): Promise<OpenaiApi.GetInitialMessage.Response
 
 async function sendMessage(params: { name: string | undefined }) {
   const response =
-    await axiosClient.post<OpenaiApi.GetInitialMessage.Responses.$200>("/gpt");
+    await axiosClient.post<OpenaiApi.GetInitialMessage.Config>("/gpt");
 
   return response.data;
 }
