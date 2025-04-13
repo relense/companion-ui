@@ -88,7 +88,7 @@ const OnBoardingView = ({
         <div className="p-3 text-sm rounded-xl bg-gray-500">
           <textarea
             ref={inputRef}
-            placeholder="Message Cold Outreach Companion"
+            placeholder="Message Outreach Companion"
             className="w-full placeholder:text-gray-405 text-white outline-none resize-none max-h-50"
             value={questions[step].answer}
             onInput={(e) => {
