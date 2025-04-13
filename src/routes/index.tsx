@@ -14,17 +14,60 @@ export type Question = {
 };
 
 const questionsData: Question[] = [
-  { questionId: 0, question: "Tell me your name", answer: "" },
-  { questionId: 1, question: "What are you offering?", answer: "" },
-  { questionId: 2, question: "Who are you trying to reach?", answer: "" },
+  {
+    questionId: 0,
+    question:
+      "Hey! 👋 Before we dive into building the perfect cold outreach, I’d love to know your name. What should I call you?",
+    answer: "",
+  },
+  {
+    questionId: 1,
+    question:
+      "Nice to meet you, {{name}}. And just so I understand the bigger picture — what’s your role in the company or business?",
+    answer: "",
+  },
+  {
+    questionId: 2,
+    question:
+      "And if you had to sum it up in one line — what does your business or product help people do?",
+    answer: "",
+  },
   {
     questionId: 3,
-    question: "What’s your goal for the email?",
+    question: "What’s the biggest goal you’re chasing right now with outreach?",
     answer: "",
   },
   {
     questionId: 4,
-    question: "Preferred tone? (e.g. friendly, direct)",
+    question: "Who’s your dream customer?",
+    answer: "",
+  },
+  {
+    questionId: 5,
+    question:
+      "“If I were your ideal client, what would you say to grab my attention in 1 sentence?",
+    answer: "",
+  },
+  {
+    questionId: 6,
+    question:
+      "What’s the #1 problem your product or service solves for your customers?",
+    answer: "",
+  },
+  {
+    questionId: 7,
+    question: "What does success look like after someone uses your product?",
+    answer: "",
+  },
+  {
+    questionId: 8,
+    question: "What platforms do you want to focus on for outreach?",
+    answer: "",
+  },
+  {
+    questionId: 9,
+    question:
+      "Anything else you want me to know so I can be your best outreach wingman?",
     answer: "",
   },
 ];
