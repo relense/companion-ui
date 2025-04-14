@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -6,23 +6,21 @@ import type { Question } from "../../routes";
 import PageWrapper from "../PageWrapper/PageWrapper";
 
 const OnBoardingView = ({
-  step,
   questions,
-  updateAnswer,
   handleNext,
 }: {
-  step: number;
   questions: Question[];
-  updateAnswer: (answer: string) => void;
   handleNext: (answer: string) => void;
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
+  const [answer, setAnswer] = useState<string>("");
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [step]);
+  }, [questions]);
 
   const botMessagebuble = (message: string) => {
     return (
@@ -58,22 +56,22 @@ const OnBoardingView = ({
         className="w-full p-6 text-center overflow-auto scrollbar-none items-center flex flex-col "
       >
         <div className="max-w-6xl w-full">
-          {step > 0 && (
-            <div className="flex flex-col flex-1">
-              {questions &&
-                questions.map((question, index) => {
-                  if (index < step) {
-                    return (
-                      <>
-                        {botMessagebuble(question.question)}
-                        {userMessageBuble(question.answer)}
-                      </>
-                    );
-                  }
-                })}
-              <div ref={bottomRef} />
-            </div>
-          )}
+          <div className="flex flex-col flex-1">
+            {questions &&
+              questions.map((question, index) => {
+                if (index < questions.length - 1) {
+                  return (
+                    <>
+                      {question.role === "assistant" &&
+                        botMessagebuble(question.content)}
+                      {question.role === "user" &&
+                        userMessageBuble(question.content)}
+                    </>
+                  );
+                }
+              })}
+            <div ref={bottomRef} />
+          </div>
         </div>
       </div>
     );
@@ -83,26 +81,28 @@ const OnBoardingView = ({
     return (
       <div className="flex justify-center flex-col max-w-6xl w-full">
         <p className="text-white p-4 font-semibold text-lg">
-          {questions[step].question}
+          {questions[questions.length - 1].content}
         </p>
         <div className="p-3 text-sm rounded-xl bg-gray-500">
           <textarea
             ref={inputRef}
             placeholder="Message Outreach Companion"
             className="w-full placeholder:text-gray-405 text-white outline-none resize-none max-h-50"
-            value={questions[step].answer}
+            value={answer}
             onInput={(e) => {
               e.currentTarget.style.height = "auto";
               e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
             }}
             onChange={(e) => {
-              updateAnswer(e.target.value);
+              e.preventDefault();
+              setAnswer(e.currentTarget.value);
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 e.currentTarget.style.height = "auto";
                 handleNext(e.currentTarget.value);
+                setAnswer("");
               }
             }}
           />
@@ -113,7 +113,7 @@ const OnBoardingView = ({
                 if (inputRef.current) {
                   inputRef.current.style.height = "auto";
                 }
-                handleNext(questions[step].answer);
+                handleNext(answer);
               }}
             >
               <FontAwesomeIcon icon={faArrowUp} />
@@ -129,16 +129,7 @@ const OnBoardingView = ({
       <div className="flex flex-col justify-center h-full items-center text-gray-900">
         {renderTitle()}
         {renderConversation()}
-        {step < questions.length ? (
-          renderInput()
-        ) : (
-          <button
-            className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700"
-            // onClick={handleGenerate}
-          >
-            Generate First Email
-          </button>
-        )}
+        {renderInput()}
       </div>
     </PageWrapper>
   );
