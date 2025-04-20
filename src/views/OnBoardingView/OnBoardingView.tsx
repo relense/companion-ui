@@ -2,15 +2,23 @@ import { useRef, useEffect, useState } from "react";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import type { Question } from "../../routes";
 import PageWrapper from "../PageWrapper/PageWrapper";
+import type { Question } from "../../utils/prompts";
 
 const OnBoardingView = ({
   questions,
   handleNext,
+  generateEmail,
+  showGeneratorButtons,
+  loadingAnswer,
+  email,
 }: {
   questions: Question[];
   handleNext: (answer: string) => void;
+  generateEmail: () => void;
+  showGeneratorButtons: boolean;
+  loadingAnswer: boolean;
+  email: string;
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -24,7 +32,7 @@ const OnBoardingView = ({
 
   const botMessagebuble = (message: string) => {
     return (
-      <div className="flex justify-start p-4 text-white text-lg font-semibold ">
+      <div className="flex text-start p-4 text-white text-lg font-semibold whitespace-pre-line">
         {message}
       </div>
     );
@@ -59,7 +67,7 @@ const OnBoardingView = ({
           <div className="flex flex-col flex-1">
             {questions &&
               questions.map((question, index) => {
-                if (index < questions.length - 1) {
+                if (index < questions.length) {
                   return (
                     <>
                       {question.role === "assistant" &&
@@ -73,6 +81,7 @@ const OnBoardingView = ({
             <div ref={bottomRef} />
           </div>
         </div>
+        {showGeneratorButtons && generatorButtons()}
       </div>
     );
   };
@@ -80,11 +89,10 @@ const OnBoardingView = ({
   const renderInput = () => {
     return (
       <div className="flex justify-center flex-col max-w-6xl w-full">
-        <p className="text-white p-4 font-semibold text-lg">
-          {questions[questions.length - 1].content}
-        </p>
+        {loadingAnswer && <div className="text-white">spinner</div>}
         <div className="p-3 text-sm rounded-xl bg-gray-500">
           <textarea
+            disabled={loadingAnswer || showGeneratorButtons}
             ref={inputRef}
             placeholder="Message Outreach Companion"
             className="w-full placeholder:text-gray-405 text-white outline-none resize-none max-h-50"
@@ -124,12 +132,42 @@ const OnBoardingView = ({
     );
   };
 
+  const generatorButtons = () => {
+    return (
+      <div>
+        <button
+          className="text-white rounded-lg border-1 border-solid border-white p-2 cursor-pointer hover:text-black hover:bg-gray-300"
+          type="button"
+          onClick={() => generateEmail()}
+          disabled={loadingAnswer}
+        >
+          Generate Email!
+        </button>
+      </div>
+    );
+  };
+
+  const renderEmail = () => {
+    return (
+      <div>
+        <h1 className="text-2xl font-semibold mb-6 text-white">
+          This is the first email for your cold outreach.
+          <br />
+        </h1>
+        <p className="text-white p-4 font-semibold text-lg whitespace-pre-line">
+          {email}
+        </p>
+      </div>
+    );
+  };
+
   return (
     <PageWrapper>
       <div className="flex flex-col justify-center h-full items-center text-gray-900">
-        {renderTitle()}
-        {renderConversation()}
-        {renderInput()}
+        {!email && renderTitle()}
+        {!email && renderConversation()}
+        {!email && !showGeneratorButtons && renderInput()}
+        {email && renderEmail()}
       </div>
     </PageWrapper>
   );

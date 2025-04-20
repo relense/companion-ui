@@ -19,9 +19,20 @@ async function sendMessage(
   return response.data;
 }
 
+async function createEmail(
+  body: OpenaiApi.CreateEmail.Config["requestBody"]
+): Promise<OpenaiApi.CreateEmail.Responses.$200> {
+  const response = await axiosClient.post<OpenaiApi.CreateEmail.Responses.$200>(
+    "/gpt-email",
+    body
+  );
+
+  return response.data;
+}
 const openaiServices = {
   getInitialMessage,
   sendMessage,
+  createEmail,
 };
 
 export { openaiServices };
