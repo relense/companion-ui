@@ -1,18 +1,14 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, useParams } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import OnBoardingView from "../views/OnBoardingView/OnBoardingView";
 import { openaiServices } from "../services/openapi.services";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import promptUtil, { type Question } from "../utils/prompts";
 
 export const Route = createFileRoute("/")({
   component: App,
 });
-
-export type Question = {
-  role: "assistant" | "user";
-  content: string;
-};
 
 const questionsData: Question[] = [
   {
@@ -22,9 +18,15 @@ const questionsData: Question[] = [
 ];
 
 export default function App() {
-  const [questions, setQuestions] = useState<Question[]>(questionsData);
+  const [questions, setQuestions] = useState<Question[]>(
+    promptUtil.basicOnboardingConversation()
+  );
+  const [showGeneratorButtons, setShowGeneratorButtons] =
+    useState<boolean>(false);
+  const [loadingAnswer, setLoadingAnswer] = useState<boolean>(true);
+  const [email, setEmail] = useState<string>("");
 
-  const { data, isLoading, error } = useQuery({
+  const { data } = useQuery({
     queryKey: ["firsMessage"],
     queryFn: openaiServices.getInitialMessage,
   });
@@ -36,22 +38,62 @@ export default function App() {
       }),
   });
 
-  if (data && data.choices) {
-    questionsData[0].content = data.choices[0].message.content;
-  }
+  const { mutate: createEmail } = useMutation({
+    mutationFn: (params: { messages: Question[] }) =>
+      openaiServices.createEmail({
+        messages: params.messages,
+      }),
+  });
+
+  const generateEmail = () => {
+    setLoadingAnswer(true);
+    createEmail(
+      { messages: questions },
+      {
+        onSuccess: (response) => {
+          setEmail(response.choices[0].message.content);
+          setLoadingAnswer(false);
+        },
+      }
+    );
+  };
+
+  useEffect(() => {
+    if (data && data.choices) {
+      if (data.choices[0].message.content.includes("<ONBOARDING_COMPLETE>")) {
+        setShowGeneratorButtons(true);
+        setLoadingAnswer(false);
+      } else {
+        const updatedQuestionsData = [...questions];
+        updatedQuestionsData[0].content = data.choices[0].message.content;
+
+        setQuestions(updatedQuestionsData);
+        setLoadingAnswer(false);
+      }
+    }
+  }, [data]);
 
   const handleNext = (answer: string) => {
-    setQuestions((prev) => {
-      const updatedQuestionsData = [...prev];
-      updatedQuestionsData.push({
-        role: "user",
-        content: answer,
-      });
+    setLoadingAnswer(true);
 
-      mutate(
-        { messages: updatedQuestionsData },
-        {
-          onSuccess: (response) => {
+    const updatedQuestionsData = [...questions];
+    updatedQuestionsData.push({
+      role: "user",
+      content: answer,
+    });
+
+    setQuestions(updatedQuestionsData);
+    mutate(
+      { messages: updatedQuestionsData },
+      {
+        onSuccess: (response) => {
+          if (
+            response.choices[0].message.content.includes(
+              "<ONBOARDING_COMPLETE>"
+            )
+          ) {
+            setShowGeneratorButtons(true);
+          } else {
             setQuestions((prev) => [
               ...prev,
               {
@@ -59,13 +101,22 @@ export default function App() {
                 content: response.choices[0].message.content,
               },
             ]);
-          },
-        }
-      );
+          }
 
-      return updatedQuestionsData;
-    });
+          setLoadingAnswer(false);
+        },
+      }
+    );
   };
 
-  return <OnBoardingView handleNext={handleNext} questions={questions} />;
+  return (
+    <OnBoardingView
+      handleNext={handleNext}
+      questions={questions}
+      generateEmail={generateEmail}
+      showGeneratorButtons={showGeneratorButtons}
+      loadingAnswer={loadingAnswer}
+      email={email}
+    />
+  );
 }
