@@ -1,6 +1,7 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, Fragment } from "react";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Link } from "@tanstack/react-router";
 
 import PageWrapper from "../PageWrapper/PageWrapper";
 import type { Question } from "../../utils/prompts";
@@ -8,14 +9,12 @@ import type { Question } from "../../utils/prompts";
 const OnBoardingView = ({
   questions,
   handleNext,
-  generateEmail,
   showGeneratorButtons,
   loadingAnswer,
   email,
 }: {
   questions: Question[];
   handleNext: (answer: string) => void;
-  generateEmail: () => void;
   showGeneratorButtons: boolean;
   loadingAnswer: boolean;
   email: string;
@@ -49,12 +48,21 @@ const OnBoardingView = ({
   };
 
   const renderTitle = () => {
-    return (
-      <h1 className="text-2xl font-semibold mb-6 text-white">
-        Let’s tailor your outreach style — starting with you.
-        <br />
-      </h1>
-    );
+    if (!showGeneratorButtons) {
+      return (
+        <h1 className="text-2xl font-semibold mb-6 text-white">
+          Let’s tailor your outreach style — starting with you.
+          <br />
+        </h1>
+      );
+    } else {
+      return (
+        <h1 className="text-2xl font-semibold mb-6 text-white">
+          We have all the information we need for your first cold outreact.
+          <br />
+        </h1>
+      );
+    }
   };
 
   const renderConversation = () => {
@@ -69,19 +77,18 @@ const OnBoardingView = ({
               questions.map((question, index) => {
                 if (index < questions.length) {
                   return (
-                    <>
+                    <Fragment key={`${question.content}`}>
                       {question.role === "assistant" &&
                         botMessagebuble(question.content)}
                       {question.role === "user" &&
                         userMessageBuble(question.content)}
-                    </>
+                    </Fragment>
                   );
                 }
               })}
             <div ref={bottomRef} />
           </div>
         </div>
-        {showGeneratorButtons && generatorButtons()}
       </div>
     );
   };
@@ -134,15 +141,15 @@ const OnBoardingView = ({
 
   const generatorButtons = () => {
     return (
-      <div>
-        <button
-          className="text-white rounded-lg border-1 border-solid border-white p-2 cursor-pointer hover:text-black hover:bg-gray-300"
+      <div className="p-4">
+        <Link
+          onClick={() => console.log("diaoidsa")}
+          to="/login"
+          className="text-white bg-blue-500 rounded-lg font-medium p-4 cursor-pointer hover:bg-blue-600"
           type="button"
-          onClick={() => generateEmail()}
-          disabled={loadingAnswer}
         >
-          Generate Email!
-        </button>
+          Generate your first email!
+        </Link>
       </div>
     );
   };
@@ -163,11 +170,12 @@ const OnBoardingView = ({
 
   return (
     <PageWrapper>
-      <div className="flex flex-col justify-center h-full items-center text-gray-900">
+      <div className="flex flex-col justify-center h-[95%] items-center text-gray-900">
         {!email && renderTitle()}
-        {!email && renderConversation()}
+        {!email && !showGeneratorButtons && renderConversation()}
         {!email && !showGeneratorButtons && renderInput()}
         {email && renderEmail()}
+        {!email && showGeneratorButtons && generatorButtons()}
       </div>
     </PageWrapper>
   );

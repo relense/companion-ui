@@ -19,16 +19,18 @@ const questionsData: Question[] = [
 
 export default function App() {
   const [questions, setQuestions] = useState<Question[]>(
-    promptUtil.basicOnboardingConversation()
+    // promptUtil.basicOnboardingConversation()
+    questionsData
   );
   const [showGeneratorButtons, setShowGeneratorButtons] =
     useState<boolean>(false);
   const [loadingAnswer, setLoadingAnswer] = useState<boolean>(true);
   const [email, setEmail] = useState<string>("");
 
-  const { data } = useQuery({
+  const { data, refetch: refetchInitialMessage } = useQuery({
     queryKey: ["firsMessage"],
     queryFn: openaiServices.getInitialMessage,
+    enabled: false,
   });
 
   const { mutate } = useMutation({
@@ -59,17 +61,28 @@ export default function App() {
   };
 
   useEffect(() => {
+    const conversation = localStorage.getItem("hasGeneratedEmail");
+    if (conversation) {
+      setQuestions(JSON.parse(conversation));
+      setShowGeneratorButtons(true);
+    } else {
+      refetchInitialMessage();
+    }
+  }, []);
+
+  useEffect(() => {
     if (data && data.choices) {
       if (data.choices[0].message.content.includes("<ONBOARDING_COMPLETE>")) {
         setShowGeneratorButtons(true);
-        setLoadingAnswer(false);
+        localStorage.setItem("hasGeneratedEmail", JSON.stringify(questions));
       } else {
         const updatedQuestionsData = [...questions];
         updatedQuestionsData[0].content = data.choices[0].message.content;
 
         setQuestions(updatedQuestionsData);
-        setLoadingAnswer(false);
       }
+
+      setLoadingAnswer(false);
     }
   }, [data]);
 
@@ -92,6 +105,10 @@ export default function App() {
               "<ONBOARDING_COMPLETE>"
             )
           ) {
+            localStorage.setItem(
+              "hasGeneratedEmail",
+              JSON.stringify(questions)
+            );
             setShowGeneratorButtons(true);
           } else {
             setQuestions((prev) => [
@@ -113,7 +130,6 @@ export default function App() {
     <OnBoardingView
       handleNext={handleNext}
       questions={questions}
-      generateEmail={generateEmail}
       showGeneratorButtons={showGeneratorButtons}
       loadingAnswer={loadingAnswer}
       email={email}
