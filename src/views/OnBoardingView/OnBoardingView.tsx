@@ -1,10 +1,10 @@
 import { useRef, useEffect, useState, Fragment } from "react";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Link } from "@tanstack/react-router";
 
 import PageWrapper from "../PageWrapper/PageWrapper";
 import type { Question } from "../../utils/prompts";
+import { Link } from "@tanstack/react-router";
 
 const OnBoardingView = ({
   questions,
@@ -141,14 +141,13 @@ const OnBoardingView = ({
 
   const generatorButtons = () => {
     return (
-      <div className="p-4">
+      <div className="p-4 flex gap-5">
         <Link
-          onClick={() => console.log("diaoidsa")}
-          to="/login"
+          to={"/login"}
           className="text-white bg-blue-500 rounded-lg font-medium p-4 cursor-pointer hover:bg-blue-600"
           type="button"
         >
-          Generate your first email!
+          Generate first email
         </Link>
       </div>
     );

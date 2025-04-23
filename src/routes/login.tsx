@@ -1,58 +1,59 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import LoginView from "../views/LoginView/LoginView";
+import { useAuth } from "../hooks/useAuth";
+import LoadingView from "../views/LoadingView/LoadingView";
 
 export const Route = createFileRoute("/login")({
-  component: App,
+  component: Login,
 });
 
-export default function App() {
-  const [mode, setMode] = useState<"login" | "signup">("login");
-  const [message, setMessage] = useState("");
+export type LoginModes = "login" | "signup";
+
+export default function Login() {
+  const [pageStatus, setPageStatus] = useState<"Loading" | "Idle">("Loading");
+  const [mode, setMode] = useState<LoginModes>("login");
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const auth = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (auth.status === "Unauthenticated") {
+      setPageStatus("Idle");
+    } else if (auth.status === "Initializing") {
+      auth.checkUserSession();
+    }
+  }, [auth.status]);
 
   const handleAuth = async (email: string, password: string) => {
-    setMessage("");
+    setLoading(true);
 
-    const { data, error } =
-      mode === "login"
-        ? await supabase.auth.signInWithPassword({
-            email,
-            password,
-          })
-        : await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-              data: {
-                userRole: "CLIENT",
-              },
-            },
-          });
-
-    if (error) {
-      setMessage(error.message);
+    if (mode === "login") {
+      auth.signIn({ email, password });
     } else {
-      const token = data?.session?.access_token;
-      if (token) {
-        localStorage.setItem("token", token);
-        setMessage("🎉 Auth success! Token saved.");
-      } else {
-        setMessage("Check your email to confirm.");
-      }
+      auth.signUp({ email, password });
     }
+
+    navigate({ to: "/" });
+
+    setLoading(false);
   };
 
   const handleMode = () => {
     setMode((prev) => (prev === "login" ? "signup" : "login"));
   };
 
-  return (
-    <LoginView
-      mode={mode}
-      message={message}
-      handleAuth={handleAuth}
-      handleMode={handleMode}
-    />
-  );
+  if (pageStatus === "Loading") {
+    return <LoadingView />;
+  } else {
+    return (
+      <LoginView
+        mode={mode}
+        handleAuth={handleAuth}
+        handleMode={handleMode}
+        loading={loading}
+      />
+    );
+  }
 }
