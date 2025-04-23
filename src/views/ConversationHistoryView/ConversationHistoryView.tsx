@@ -5,7 +5,7 @@ import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import PageWrapper from "../PageWrapper/PageWrapper";
 import type { Question } from "../../utils/prompts";
 
-const HistoryView = ({
+const ConversationHistoryView = ({
   handleNext,
   questions,
   loadingAnswer,
@@ -126,4 +126,4 @@ const HistoryView = ({
   );
 };
 
-export default HistoryView;
+export default ConversationHistoryView;

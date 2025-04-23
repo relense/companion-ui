@@ -1,9 +1,14 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 
-import HistoryView from "../../views/HistoryView/HistoryView";
-import type { Question } from "../../utils/prompts";
-import { openaiServices } from "../../services/openapi.services";
+import type { Question } from "../utils/prompts";
+import { openaiServices } from "../services/openapi.services";
+import ConversationHistoryView from "../views/ConversationHistoryView/ConversationHistoryView";
+
+export const Route = createFileRoute("/history")({
+  component: History,
+});
 
 const questionsData: Question[] = [
   {
@@ -12,7 +17,7 @@ const questionsData: Question[] = [
   },
 ];
 
-const History = () => {
+export default function History() {
   const [questions, setQuestions] = useState<Question[]>(questionsData);
   const [loadingAnswer, setLoadingAnswer] = useState<boolean>(false);
 
@@ -57,12 +62,10 @@ const History = () => {
   };
 
   return (
-    <HistoryView
+    <ConversationHistoryView
       handleNext={handleNext}
       questions={questions}
       loadingAnswer={loadingAnswer}
     />
   );
-};
-
-export default History;
+}

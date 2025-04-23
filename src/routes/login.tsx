@@ -35,7 +35,7 @@ export default function Login() {
       auth.signUp({ email, password });
     }
 
-    navigate({ to: "/" });
+    navigate({ to: "/home" });
 
     setLoading(false);
   };
