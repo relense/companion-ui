@@ -9,11 +9,16 @@ export const Route = createFileRoute("/login")({
 });
 
 export type LoginModes = "login" | "signup";
+export type LoginPageStatus =
+  | "Loading"
+  | "Idle"
+  | "SignIn"
+  | "ConfirmEmail"
+  | "LoadingSignIn";
 
 export default function Login() {
-  const [pageStatus, setPageStatus] = useState<"Loading" | "Idle">("Loading");
+  const [pageStatus, setPageStatus] = useState<LoginPageStatus>("Loading");
   const [mode, setMode] = useState<LoginModes>("login");
-  const [loading, setLoading] = useState<boolean>(false);
 
   const auth = useAuth();
   const navigate = useNavigate();
@@ -27,17 +32,23 @@ export default function Login() {
   }, [auth.status]);
 
   const handleAuth = async (email: string, password: string) => {
-    setLoading(true);
+    setPageStatus("LoadingSignIn");
 
     if (mode === "login") {
       auth.signIn({ email, password });
+      navigate({ to: "/home" });
     } else {
-      auth.signUp({ email, password });
+      const result = await auth.signUp({ email, password });
+
+      if (result.status === "signin") {
+        console.log("DO SOMETHING");
+        setPageStatus("SignIn");
+      } else if (result.status === "confirmEmail") {
+        setPageStatus("ConfirmEmail");
+      } else {
+        setPageStatus("Idle");
+      }
     }
-
-    navigate({ to: "/home" });
-
-    setLoading(false);
   };
 
   const handleMode = () => {
@@ -50,9 +61,9 @@ export default function Login() {
     return (
       <LoginView
         mode={mode}
+        pageStatus={pageStatus}
         handleAuth={handleAuth}
         handleMode={handleMode}
-        loading={loading}
       />
     );
   }

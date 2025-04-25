@@ -1,16 +1,17 @@
 import { useState } from "react";
 import PageWrapper from "../PageWrapper/PageWrapper";
+import type { LoginPageStatus } from "../../routes/login";
 
 const LoginView = ({
   mode,
   handleAuth,
   handleMode,
-  loading,
+  pageStatus,
 }: {
   mode: "login" | "signup";
   handleAuth: (email: string, password: string) => Promise<void>;
   handleMode: () => void;
-  loading: boolean;
+  pageStatus: LoginPageStatus;
 }) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -21,6 +22,11 @@ const LoginView = ({
 
   const renderInputs = () => {
     const buttonName = mode === "login" ? "Sign in" : "Sign up";
+    const disabled =
+      (pageStatus === "LoadingSignIn" ||
+        pageStatus === "ConfirmEmail" ||
+        pageStatus === "SignIn") &&
+      mode === "signup";
 
     return (
       <div className="flex flex-col w-full gap-4 items-center">
@@ -42,12 +48,28 @@ const LoginView = ({
           onChange={(e) => setPassword(e.target.value)}
         />
 
+        {pageStatus === "ConfirmEmail" && mode === "signup" && (
+          <div className="text-red-600 font-bold text-2xl">
+            Please confirm your email and signin
+          </div>
+        )}
+
+        {pageStatus === "SignIn" && mode === "signup" && (
+          <div className="text-red-600 font-bold text-2xl">
+            Please sign in instead
+          </div>
+        )}
+
         <button
           onClick={() => onHandleClick()}
-          disabled={loading}
-          className="w-3/6 bg-blue-600 text-white p-4 rounded hover:bg-blue-700 text-2xl cursor-pointer"
+          disabled={disabled}
+          className={
+            disabled
+              ? "w-3/6 bg-gray-600 text-white p-4 rounded text-2xl cursor-not-allowed"
+              : "w-3/6 bg-blue-600 text-white p-4 rounded hover:bg-blue-700 text-2xl cursor-pointer"
+          }
         >
-          {buttonName}
+          {pageStatus === "LoadingSignIn" ? "Loading" : buttonName}
         </button>
       </div>
     );

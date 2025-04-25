@@ -19,7 +19,10 @@ export type AuthContextStatus =
 export interface AuthContextType {
   status: AuthContextStatus;
   checkUserSession: () => void;
-  signUp: (params: { email: string; password: string }) => void;
+  signUp: (params: {
+    email: string;
+    password: string;
+  }) => Promise<{ status: "signin" | "confirmEmail" }>;
   signIn: (params: { email: string; password: string }) => void;
   signOut: () => void;
 }
@@ -28,7 +31,7 @@ export const AuthContext = createContext<AuthContextType>({
   status: "Initializing",
   checkUserSession: () => {},
   signIn: () => {},
-  signUp: () => {},
+  signUp: async () => ({ status: "signin" }),
   signOut: () => {},
 });
 
@@ -80,6 +83,18 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
 
       if (session.status === "Authenticated") {
         setStatus("Authenticated");
+
+        if (session.status === "Authenticated") {
+          setStatus("Authenticated");
+
+          const userMessages = localStorage.getItem("userMessages");
+
+          if (userMessages) {
+            userServices.completeAuth({
+              messages: JSON.parse(userMessages),
+            });
+          }
+        }
       } else {
         setStatus("Unauthenticated");
       }
@@ -94,25 +109,17 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   }: {
     email: string;
     password: string;
-  }) => {
+  }): Promise<{ status: "signin" | "confirmEmail" }> => {
     try {
-      const session = await supabaseServices.signIn(email, password);
+      const data = await supabaseServices.signup(email, password);
 
-      if (session.status === "Authenticated") {
-        setStatus("Authenticated");
-
-        const userMessages = localStorage.getItem("userMessages");
-
-        if (userMessages) {
-          userServices.completeAuth({
-            messages: JSON.parse(userMessages),
-          });
-        }
-      } else {
-        setStatus("Unauthenticated");
+      if (data.user?.identities?.length === 0) {
+        return { status: "signin" };
       }
+
+      return { status: "confirmEmail" };
     } catch (error) {
-      setStatus("Unauthenticated");
+      throw new Error("Sign up failed");
     }
   };
 
