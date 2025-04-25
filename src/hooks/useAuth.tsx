@@ -9,6 +9,7 @@ import {
 
 import { supabaseServices } from "../services/supabase.services";
 import { useNavigate, useRouter } from "@tanstack/react-router";
+import { userServices } from "../services/user.services";
 
 export type AuthContextStatus =
   | "Initializing"
@@ -99,6 +100,14 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
 
       if (session.status === "Authenticated") {
         setStatus("Authenticated");
+
+        const userMessages = localStorage.getItem("userMessages");
+
+        if (userMessages) {
+          userServices.completeAuth({
+            messages: JSON.parse(userMessages),
+          });
+        }
       } else {
         setStatus("Unauthenticated");
       }
@@ -110,7 +119,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const signOut = async () => {
     try {
       localStorage.removeItem("tempNovaToken");
-      const data = await supabaseServices.signout();
+      await supabaseServices.signout();
 
       setStatus("Unauthenticated");
     } catch (error) {

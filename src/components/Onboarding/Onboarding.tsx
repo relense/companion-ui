@@ -53,7 +53,7 @@ const Onboarding = () => {
   };
 
   useEffect(() => {
-    const conversation = localStorage.getItem("hasGeneratedEmail");
+    const conversation = localStorage.getItem("userMessages");
     if (conversation) {
       setQuestions(JSON.parse(conversation));
       setShowGeneratorButtons(true);
@@ -66,7 +66,7 @@ const Onboarding = () => {
     if (data && data.choices) {
       if (data.choices[0].message.content.includes("<ONBOARDING_COMPLETE>")) {
         setShowGeneratorButtons(true);
-        localStorage.setItem("hasGeneratedEmail", JSON.stringify(questions));
+        localStorage.setItem("userMessages", JSON.stringify(questions));
       } else {
         const updatedQuestionsData = [...questions];
         updatedQuestionsData[0].content = data.choices[0].message.content;
@@ -97,10 +97,7 @@ const Onboarding = () => {
               "<ONBOARDING_COMPLETE>"
             )
           ) {
-            localStorage.setItem(
-              "hasGeneratedEmail",
-              JSON.stringify(questions)
-            );
+            localStorage.setItem("userMessages", JSON.stringify(questions));
             setShowGeneratorButtons(true);
           } else {
             setQuestions((prev) => [
