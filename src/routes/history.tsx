@@ -21,16 +21,18 @@ export default function History() {
   const [questions, setQuestions] = useState<Question[]>(questionsData);
   const [loadingAnswer, setLoadingAnswer] = useState<boolean>(false);
 
-  const { mutate } = useMutation({
+  const { mutate: generateMoreHistory } = useMutation({
     mutationFn: (params: { messages: Question[] }) =>
-      openaiServices.sendMessage({
+      openaiServices.generateMoreHistory({
         messages: params.messages,
       }),
   });
 
   useEffect(() => {
     const conversation = localStorage.getItem("hasGeneratedEmail") || "";
-    setQuestions(JSON.parse(conversation));
+
+    const data = JSON.parse(conversation);
+    setQuestions(data);
   }, []);
 
   const handleNext = (answer: string) => {
@@ -43,7 +45,7 @@ export default function History() {
     });
 
     setQuestions(updatedQuestionsData);
-    mutate(
+    generateMoreHistory(
       { messages: updatedQuestionsData },
       {
         onSuccess: (response) => {

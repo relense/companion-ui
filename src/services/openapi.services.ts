@@ -1,8 +1,10 @@
-import { axiosClient } from "@/lib/axiosClient";
+import { publicAxiosClient, clientAxiosClient } from "@/lib/axiosClient";
 
 async function getInitialMessage(): Promise<OpenaiApi.GetInitialMessage.Responses.$200> {
   const response =
-    await axiosClient.get<OpenaiApi.GetInitialMessage.Responses.$200>("/gpt");
+    await publicAxiosClient.get<OpenaiApi.GetInitialMessage.Responses.$200>(
+      "/gpt"
+    );
 
   return response.data;
 }
@@ -11,7 +13,7 @@ async function sendMessage(
   body: OpenaiApi.SendOpenaiMessages.Config["requestBody"]
 ): Promise<OpenaiApi.SendOpenaiMessages.Responses.$200> {
   const response =
-    await axiosClient.post<OpenaiApi.SendOpenaiMessages.Responses.$200>(
+    await publicAxiosClient.post<OpenaiApi.SendOpenaiMessages.Responses.$200>(
       "/gpt",
       body
     );
@@ -20,19 +22,40 @@ async function sendMessage(
 }
 
 async function createEmail(
-  body: OpenaiApi.CreateEmail.Config["requestBody"]
-): Promise<OpenaiApi.CreateEmail.Responses.$200> {
-  const response = await axiosClient.post<OpenaiApi.CreateEmail.Responses.$200>(
-    "/gpt-email",
-    body
-  );
+  body: ClientApi.CreateEmail.Config["requestBody"]
+): Promise<ClientApi.CreateEmail.Responses.$200> {
+  const response =
+    await clientAxiosClient.post<ClientApi.CreateEmail.Responses.$200>(
+      "/gpt/email",
+      body
+    );
 
   return response.data;
 }
+
+async function generateMoreHistory(
+  body: ClientApi.CreateMoreHistory.Config["requestBody"]
+): Promise<ClientApi.CreateMoreHistory.Responses.$200> {
+  const token = localStorage.getItem("tempNovaToken");
+  const response =
+    await clientAxiosClient.post<ClientApi.CreateMoreHistory.Responses.$200>(
+      "/gpt/history",
+      body,
+      {
+        headers: {
+          apikey: token,
+        },
+      }
+    );
+
+  return response.data;
+}
+
 const openaiServices = {
   getInitialMessage,
   sendMessage,
   createEmail,
+  generateMoreHistory,
 };
 
 export { openaiServices };
