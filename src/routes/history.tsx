@@ -40,9 +40,9 @@ export default function History() {
   });
 
   const { mutate: onboardingMessageMutate } = useMutation({
-    mutationFn: (params: { message: Question }) =>
+    mutationFn: (params: { messages: Question[] }) =>
       openaiServices.sendMessageAndSave({
-        message: params.message,
+        messages: params.messages,
         companionId: currentCompanionId || "",
       }),
   });
@@ -102,7 +102,12 @@ export default function History() {
 
     setQuestions(updatedQuestionsData);
     onboardingMessageMutate(
-      { message: updatedQuestionsData[updatedQuestionsData.length - 1] },
+      {
+        messages: [
+          updatedQuestionsData[updatedQuestionsData.length - 1],
+          updatedQuestionsData[updatedQuestionsData.length - 2],
+        ],
+      },
       {
         onSuccess: (response) => {
           if (
