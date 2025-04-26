@@ -27,6 +27,11 @@ export default function History() {
   const [companionHasOnBoarding, setCompanionHasOnBoarding] =
     useState<boolean>(false);
 
+  const { data: initialMessage } = useQuery({
+    queryKey: ["firsMessage"],
+    queryFn: openaiServices.getInitialMessage,
+  });
+
   const { mutate: generateMoreHistory } = useMutation({
     mutationFn: (params: { messages: Question[] }) =>
       openaiServices.generateMoreHistory({
@@ -35,9 +40,10 @@ export default function History() {
   });
 
   const { mutate: onboardingMessageMutate } = useMutation({
-    mutationFn: (params: { messages: Question[] }) =>
-      openaiServices.sendMessage({
-        messages: params.messages,
+    mutationFn: (params: { message: Question }) =>
+      openaiServices.sendMessageAndSave({
+        message: params.message,
+        companionId: currentCompanionId || "",
       }),
   });
 
@@ -50,7 +56,7 @@ export default function History() {
     queryKey: ["companionMessages", currentCompanionId],
     queryFn: () =>
       companionServices.getAllCompanionMessages(currentCompanionId!),
-    enabled: !!currentCompanionId,
+    enabled: !!currentCompanionId && companionHasOnBoarding,
   });
 
   useEffect(() => {
@@ -61,7 +67,7 @@ export default function History() {
 
     if (companionMessages?.items) {
       setQuestions(
-        companionMessages.items.map((item: { content: any; role: any }) => {
+        companionMessages.items.map((item) => {
           return {
             content: item.content,
             role: item.role,
@@ -70,6 +76,20 @@ export default function History() {
       );
     }
   }, [companionsData, companionMessages]);
+
+  useEffect(() => {
+    if (
+      initialMessage &&
+      !companionHasOnBoarding &&
+      questions[0].content === ""
+    ) {
+      const updatedQuestionsData = [...questions];
+      updatedQuestionsData[0].content =
+        initialMessage.choices[0].message.content || "";
+
+      setQuestions(updatedQuestionsData);
+    }
+  }, [initialMessage]);
 
   const handleNextOnboarding = (answer: string) => {
     setLoadingAnswer(true);
@@ -82,10 +102,11 @@ export default function History() {
 
     setQuestions(updatedQuestionsData);
     onboardingMessageMutate(
-      { messages: updatedQuestionsData },
+      { message: updatedQuestionsData[updatedQuestionsData.length - 1] },
       {
         onSuccess: (response) => {
           if (
+            response.choices[0].message.content &&
             response.choices[0].message.content.includes(
               "<ONBOARDING_COMPLETE>"
             )
@@ -96,7 +117,7 @@ export default function History() {
               ...prev,
               {
                 role: "assistant",
-                content: response.choices[0].message.content,
+                content: response.choices[0].message.content || "",
               },
             ]);
           }
@@ -124,8 +145,8 @@ export default function History() {
           setQuestions((prev) => [
             ...prev,
             {
-              role: "assistant",
-              content: response.choices[0].message.content,
+              role: "assistant" as const,
+              content: response.choices[0].message.content || "",
             },
           ]);
 

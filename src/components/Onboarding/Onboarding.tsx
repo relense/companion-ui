@@ -17,7 +17,6 @@ const Onboarding = () => {
   const [showGeneratorButtons, setShowGeneratorButtons] =
     useState<boolean>(false);
   const [loadingAnswer, setLoadingAnswer] = useState<boolean>(true);
-  const [email, setEmail] = useState<string>("");
 
   const { data, refetch: refetchInitialMessage } = useQuery({
     queryKey: ["firsMessage"],
@@ -32,26 +31,6 @@ const Onboarding = () => {
       }),
   });
 
-  const { mutate: createEmail } = useMutation({
-    mutationFn: (params: { messages: Question[] }) =>
-      openaiServices.createEmail({
-        messages: params.messages,
-      }),
-  });
-
-  const generateEmail = () => {
-    setLoadingAnswer(true);
-    createEmail(
-      { messages: questions },
-      {
-        onSuccess: (response) => {
-          setEmail(response.choices[0].message.content);
-          setLoadingAnswer(false);
-        },
-      }
-    );
-  };
-
   useEffect(() => {
     const conversation = localStorage.getItem("userMessages");
     if (conversation) {
@@ -64,12 +43,15 @@ const Onboarding = () => {
 
   useEffect(() => {
     if (data && data.choices) {
-      if (data.choices[0].message.content.includes("<ONBOARDING_COMPLETE>")) {
+      if (
+        data.choices[0].message.content &&
+        data.choices[0].message.content.includes("<ONBOARDING_COMPLETE>")
+      ) {
         setShowGeneratorButtons(true);
         localStorage.setItem("userMessages", JSON.stringify(questions));
       } else {
         const updatedQuestionsData = [...questions];
-        updatedQuestionsData[0].content = data.choices[0].message.content;
+        updatedQuestionsData[0].content = data.choices[0].message.content || "";
 
         setQuestions(updatedQuestionsData);
       }
@@ -93,6 +75,7 @@ const Onboarding = () => {
       {
         onSuccess: (response) => {
           if (
+            response.choices[0].message.content &&
             response.choices[0].message.content.includes(
               "<ONBOARDING_COMPLETE>"
             )
@@ -104,7 +87,7 @@ const Onboarding = () => {
               ...prev,
               {
                 role: "assistant",
-                content: response.choices[0].message.content,
+                content: response.choices[0].message.content || "",
               },
             ]);
           }
@@ -121,7 +104,6 @@ const Onboarding = () => {
       questions={questions}
       showGeneratorButtons={showGeneratorButtons}
       loadingAnswer={loadingAnswer}
-      email={email}
     />
   );
 };

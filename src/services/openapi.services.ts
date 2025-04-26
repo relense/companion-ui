@@ -21,6 +21,25 @@ async function sendMessage(
   return response.data;
 }
 
+async function sendMessageAndSave(
+  body: ClientApi.SendOpenaiMessages.Config["requestBody"]
+): Promise<ClientApi.SendOpenaiMessages.Responses.$200> {
+  const token = localStorage.getItem("tempNovaToken");
+
+  const response =
+    await clientAxiosClient.post<ClientApi.SendOpenaiMessages.Responses.$200>(
+      "/gpt",
+      body,
+      {
+        headers: {
+          apikey: token,
+        },
+      }
+    );
+
+  return response.data;
+}
+
 async function createEmail(
   body: ClientApi.CreateEmail.Config["requestBody"]
 ): Promise<ClientApi.CreateEmail.Responses.$200> {
@@ -54,6 +73,7 @@ async function generateMoreHistory(
 const openaiServices = {
   getInitialMessage,
   sendMessage,
+  sendMessageAndSave,
   createEmail,
   generateMoreHistory,
 };

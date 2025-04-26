@@ -11,13 +11,11 @@ const OnBoardingView = ({
   handleNext,
   showGeneratorButtons,
   loadingAnswer,
-  email,
 }: {
   questions: Question[];
   handleNext: (answer: string) => void;
   showGeneratorButtons: boolean;
   loadingAnswer: boolean;
-  email: string;
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -147,22 +145,8 @@ const OnBoardingView = ({
           className="text-white bg-blue-500 rounded-lg font-medium p-4 cursor-pointer hover:bg-blue-600"
           type="button"
         >
-          Generate first email
+          Sign up to generate your first email
         </Link>
-      </div>
-    );
-  };
-
-  const renderEmail = () => {
-    return (
-      <div>
-        <h1 className="text-2xl font-semibold mb-6 text-white">
-          This is the first email for your cold outreach.
-          <br />
-        </h1>
-        <p className="text-white p-4 font-semibold text-lg whitespace-pre-line">
-          {email}
-        </p>
       </div>
     );
   };
@@ -170,11 +154,10 @@ const OnBoardingView = ({
   return (
     <PageWrapper>
       <div className="flex flex-col justify-center h-[95%] items-center text-gray-900">
-        {!email && renderTitle()}
-        {!email && !showGeneratorButtons && renderConversation()}
-        {!email && !showGeneratorButtons && renderInput()}
-        {email && renderEmail()}
-        {!email && showGeneratorButtons && generatorButtons()}
+        {renderTitle()}
+        {!showGeneratorButtons && renderConversation()}
+        {!showGeneratorButtons && renderInput()}
+        {showGeneratorButtons && generatorButtons()}
       </div>
     </PageWrapper>
   );

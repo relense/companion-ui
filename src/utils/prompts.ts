@@ -1,5 +1,5 @@
 export type Question = {
-  role: "assistant" | "user";
+  role: "user" | "assistant" | "system" | "tool" | "function" | "developer";
   content: string;
 };
 

@@ -43,7 +43,14 @@
         },
         "responses": {
           "200": {
-            "description": "Successfully completed authentication"
+            "description": "Successfully completed authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
           },
           "400": {
             "description": "Invalid request data",
@@ -173,7 +180,6 @@
         "x-order": 0
       }
     },
-
     "/messages/{messageId}": {
       "get": {
         "summary": "Get a specific message",
@@ -602,13 +608,15 @@
                           "createdAt": { "type": "string" },
                           "updatedAt": {
                             "type": "string"
-                          }
+                          },
+                          "hasOnBoarding": { "type": "boolean" }
                         },
                         "required": [
                           "companionId",
                           "name",
                           "createdAt",
-                          "updatedAt"
+                          "updatedAt",
+                          "hasOnBoarding"
                         ]
                       }
                     },
@@ -805,6 +813,17 @@
                         "properties": {
                           "messageId": { "type": "string" },
                           "content": { "type": "string" },
+                          "role": {
+                            "type": "string",
+                            "enum": [
+                              "user",
+                              "assistant",
+                              "system",
+                              "tool",
+                              "function",
+                              "developer"
+                            ]
+                          },
                           "createdAt": {
                             "type": "string",
                             "format": "date-time"
@@ -816,6 +835,7 @@
                         },
                         "required": [
                           "messageId",
+                          "role",
                           "content",
                           "createdAt",
                           "updatedAt"
@@ -903,6 +923,45 @@
       "post": {
         "summary": "Send messages to OpenAI",
         "operationId": "sendOpenaiMessages",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "object",
+                    "properties": {
+                      "role": {
+                        "type": "string",
+                        "enum": [
+                          "user",
+                          "assistant",
+                          "system",
+                          "tool",
+                          "function",
+                          "developer"
+                        ],
+                        "description": "The role of the message sender"
+                      },
+                      "content": {
+                        "type": "string",
+                        "description": "The content of the message"
+                      }
+                    },
+                    "required": ["role", "content"]
+                  },
+                  "companionId": {
+                    "type": "string",
+                    "description": "The ID of the companion"
+                  }
+                },
+                "required": ["message", "companionId"]
+              }
+            }
+          }
+        },
         "tags": ["openai"],
         "responses": {
           "200": {
@@ -922,7 +981,7 @@
                             "type": "object",
                             "properties": {
                               "role": { "type": "string" },
-                              "content": { "type": "string" }
+                              "content": { "type": "string", "nullable": true }
                             },
                             "required": ["role", "content"]
                           }
@@ -1000,7 +1059,7 @@
                             "type": "object",
                             "properties": {
                               "role": { "type": "string" },
-                              "content": { "type": "string" }
+                              "content": { "type": "string", "nullable": true }
                             },
                             "required": ["role", "content"]
                           }
@@ -1063,7 +1122,17 @@
                     "items": {
                       "type": "object",
                       "properties": {
-                        "role": { "type": "string" },
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "user",
+                            "assistant",
+                            "system",
+                            "tool",
+                            "function",
+                            "developer"
+                          ]
+                        },
                         "content": { "type": "string" }
                       },
                       "required": ["role", "content"]
@@ -1093,8 +1162,18 @@
                           "message": {
                             "type": "object",
                             "properties": {
-                              "role": { "type": "string" },
-                              "content": { "type": "string" }
+                              "role": {
+                                "type": "string",
+                                "enum": [
+                                  "user",
+                                  "assistant",
+                                  "system",
+                                  "tool",
+                                  "function",
+                                  "developer"
+                                ]
+                              },
+                              "content": { "type": "string", "nullable": true }
                             },
                             "required": ["role", "content"]
                           }
