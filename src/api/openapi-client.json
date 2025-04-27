@@ -919,10 +919,10 @@
         }
       }
     },
-    "/gpt": {
+    "/gpt/messages": {
       "post": {
         "summary": "Send messages to OpenAI",
-        "operationId": "sendOpenaiMessages",
+        "operationId": "sendMessagesAndSave",
         "requestBody": {
           "required": true,
           "content": {
@@ -1136,9 +1136,10 @@
                       },
                       "required": ["role", "content"]
                     }
-                  }
+                  },
+                  "companionId": { "type": "string" }
                 },
-                "required": ["messages"]
+                "required": ["messages", "companionId"]
               }
             }
           }

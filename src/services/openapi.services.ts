@@ -22,13 +22,13 @@ async function sendMessage(
 }
 
 async function sendMessageAndSave(
-  body: ClientApi.SendOpenaiMessages.Config["requestBody"]
-): Promise<ClientApi.SendOpenaiMessages.Responses.$200> {
+  body: ClientApi.SendMessagesAndSave.Config["requestBody"]
+): Promise<ClientApi.SendMessagesAndSave.Responses.$200> {
   const token = localStorage.getItem("tempNovaToken");
 
   const response =
-    await clientAxiosClient.post<ClientApi.SendOpenaiMessages.Responses.$200>(
-      "/gpt",
+    await clientAxiosClient.post<ClientApi.SendMessagesAndSave.Responses.$200>(
+      "/gpt/messages",
       body,
       {
         headers: {

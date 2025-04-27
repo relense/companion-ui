@@ -323,7 +323,7 @@ declare namespace ClientApi {
       successResponses: Responses.$200;
     }
   }
-  namespace SendOpenaiMessages {
+  namespace SendMessagesAndSave {
     export type QueryParameters = {};
     export type PathParameters = {};
     export interface RequestBody {
@@ -340,10 +340,10 @@ declare namespace ClientApi {
       }
     }
     export interface Config {
-      operationId: "sendOpenaiMessages";
+      operationId: "sendMessagesAndSave";
       method: "post";
-      expressPath: "/gpt";
-      openapiPath: "/gpt";
+      expressPath: "/gpt/messages";
+      openapiPath: "/gpt/messages";
       pathParams: PathParameters;
       queryParams: QueryParameters;
       requestBody: RequestBody;
@@ -388,6 +388,7 @@ declare namespace ClientApi {
     export type PathParameters = {};
     export interface RequestBody {
       messages: { role: 'user' | 'assistant' | 'system' | 'tool' | 'function' | 'developer'; content: string; }[];
+      companionId: string;
     }
     namespace Responses {
       export interface $200 {

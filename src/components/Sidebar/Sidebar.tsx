@@ -13,12 +13,6 @@ const Sidebar = () => {
         <FontAwesomeIcon icon={faPenToSquare} size="xl" />
       </div>
       <div className="flex flex-col gap-6">
-        <Link
-          to={"/history"}
-          className="flex px-10 py-4 text-xl items-center cursor-pointer hover:bg-gray-500 font-bold"
-        >
-          History
-        </Link>
         <div className="flex w-full  text-lg flex-col font-bold">
           <div className="px-10 py-2">Today</div>
           <Link

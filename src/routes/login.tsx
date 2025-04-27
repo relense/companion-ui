@@ -41,7 +41,6 @@ export default function Login() {
       const result = await auth.signUp({ email, password });
 
       if (result.status === "signin") {
-        console.log("DO SOMETHING");
         setPageStatus("SignIn");
       } else if (result.status === "confirmEmail") {
         setPageStatus("ConfirmEmail");
