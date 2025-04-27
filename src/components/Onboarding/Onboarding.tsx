@@ -80,7 +80,6 @@ const Onboarding = () => {
               "<ONBOARDING_COMPLETE>"
             )
           ) {
-            localStorage.setItem("userMessages", JSON.stringify(questions));
             setShowGeneratorButtons(true);
           } else {
             setQuestions((prev) => [
@@ -91,6 +90,11 @@ const Onboarding = () => {
               },
             ]);
           }
+
+          localStorage.setItem(
+            "userMessages",
+            JSON.stringify(updatedQuestionsData)
+          );
 
           setLoadingAnswer(false);
         },

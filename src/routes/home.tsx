@@ -51,6 +51,7 @@ export default function Home() {
     queryFn: () =>
       companionServices.getAllCompanionMessages(currentCompanionId!),
     enabled: !!currentCompanionId,
+    staleTime: 0,
   });
 
   // MUtations
@@ -69,6 +70,10 @@ export default function Home() {
         companionId: currentCompanionId || "",
       }),
   });
+
+  useEffect(() => {
+    localStorage.removeItem("userMessages");
+  }, []);
 
   // Use effect to get and set the companion
   useEffect(() => {
