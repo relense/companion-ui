@@ -46,13 +46,14 @@ export default function Home() {
     queryFn: companionServices.getAllCompanions,
   });
 
-  const { data: companionMessages, isFetched } = useQuery({
-    queryKey: ["companionMessages", currentCompanionId],
-    queryFn: () =>
-      companionServices.getAllCompanionMessages(currentCompanionId!),
-    enabled: !!currentCompanionId,
-    staleTime: 0,
-  });
+  const { data: companionMessages, isFetched: isFetchCompanionMessages } =
+    useQuery({
+      queryKey: ["companionMessages", currentCompanionId],
+      queryFn: () =>
+        companionServices.getAllCompanionMessages(currentCompanionId!),
+      enabled: !!currentCompanionId,
+      staleTime: 0,
+    });
 
   // MUtations
   const { mutate: generateMoreHistory } = useMutation({
@@ -71,9 +72,13 @@ export default function Home() {
       }),
   });
 
-  useEffect(() => {
-    localStorage.removeItem("userMessages");
-  }, []);
+  // useEffect(() => {
+  //   localStorage.removeItem("userMessages");
+
+  //   return () => {
+  //     setQuestions(questionsData);
+  //   };
+  // }, []);
 
   // Use effect to get and set the companion
   useEffect(() => {
@@ -89,7 +94,7 @@ export default function Home() {
 
   //Use effect to get companionMessages. If the query has fetch, check this. If there are no companions refetchIniitlaMessage
   useEffect(() => {
-    if (isFetched) {
+    if (isFetchCompanionMessages) {
       if (companionMessages?.items && companionMessages?.items.length > 0) {
         setQuestions(
           companionMessages.items.map((item) => {
@@ -103,11 +108,11 @@ export default function Home() {
         refetchInitialMessage();
       }
     }
-  }, [companionMessages?.items?.length, isFetched]);
+  }, [companionMessages?.items?.length, isFetchCompanionMessages]);
 
   // Use effect to get initial message. This should only happen if there are no companion messages
   useEffect(() => {
-    if (initialMessage && !companionHasOnBoarding) {
+    if (initialMessage && !companionHasOnBoarding && isFetchCompanionMessages) {
       const updatedQuestionsData = [...questions];
       updatedQuestionsData[0].content =
         initialMessage.choices[0].message.content || "";

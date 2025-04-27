@@ -21,7 +21,6 @@ export default function Login() {
   const [mode, setMode] = useState<LoginModes>("login");
 
   const auth = useAuth();
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (auth.status === "Unauthenticated") {
@@ -36,7 +35,6 @@ export default function Login() {
 
     if (mode === "login") {
       auth.signIn({ email, password });
-      navigate({ to: "/home" });
     } else {
       const result = await auth.signUp({ email, password });
 

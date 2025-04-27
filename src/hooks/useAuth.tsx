@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
 
       if (checkSession.status === "Authenticated") {
         setStatus("Authenticated");
-        navigate({ to: "/" });
+        navigate({ to: "/home" });
       } else {
         if (
           router.state.location.pathname !== "/" &&
@@ -84,16 +84,12 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
       if (session.status === "Authenticated") {
         setStatus("Authenticated");
 
-        if (session.status === "Authenticated") {
-          setStatus("Authenticated");
+        const userMessages = localStorage.getItem("userMessages");
 
-          const userMessages = localStorage.getItem("userMessages");
-
-          if (userMessages) {
-            userServices.completeAuth({
-              messages: JSON.parse(userMessages),
-            });
-          }
+        if (userMessages) {
+          userServices.completeAuth({
+            messages: JSON.parse(userMessages),
+          });
         }
       } else {
         setStatus("Unauthenticated");
