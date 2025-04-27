@@ -20,7 +20,10 @@ const Navbar = () => {
 
   const renderLogo = () => {
     return (
-      <Link to={"/"} className="flex w-full cursor-pointer gap-2 items-center">
+      <Link
+        to={"/home"}
+        className="flex w-full cursor-pointer gap-2 items-center"
+      >
         <img className="w-12 h-12" src="/imgs/logo.png" alt="Companion Logo" />
         {authStatus !== "Authenticated" && <div>Outreach Companion</div>}
       </Link>

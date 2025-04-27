@@ -1,10 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import type { Question } from "../utils/prompts";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { openaiServices } from "../services/openapi.services";
 import { companionServices } from "../services/companion.services";
 import ConversationHistoryView from "../views/ConversationHistoryView/ConversationHistoryView";
+import { useAuth } from "../hooks/useAuth";
 
 export const Route = createFileRoute("/home")({
   component: Home,
@@ -23,8 +24,15 @@ export default function Home() {
   const [currentCompanionId, setCurrentCompanionId] = useState<
     string | undefined
   >(undefined);
+  const auth = useAuth();
+  const navigate = useNavigate();
+
   const [companionHasOnBoarding, setCompanionHasOnBoarding] =
     useState<boolean>(false);
+
+  if (auth.status !== "Authenticated") {
+    navigate({ to: "/" });
+  }
 
   // Fetch
   const { data: initialMessage, refetch: refetchInitialMessage } = useQuery({
