@@ -19,6 +19,7 @@ const questionsData: Question[] = [
 ];
 
 export default function Home() {
+  const [pageStatus, setPageStatus] = useState<"Loading" | "Idle">("Loading");
   const [questions, setQuestions] = useState<Question[]>(questionsData);
   const [loadingAnswer, setLoadingAnswer] = useState<boolean>(false);
   const [currentCompanionId, setCurrentCompanionId] = useState<
@@ -72,13 +73,9 @@ export default function Home() {
       }),
   });
 
-  // useEffect(() => {
-  //   localStorage.removeItem("userMessages");
-
-  //   return () => {
-  //     setQuestions(questionsData);
-  //   };
-  // }, []);
+  useEffect(() => {
+    localStorage.removeItem("userMessages");
+  }, []);
 
   // Use effect to get and set the companion
   useEffect(() => {
@@ -104,6 +101,8 @@ export default function Home() {
             };
           })
         );
+
+        setPageStatus("Idle");
       } else {
         refetchInitialMessage();
       }
@@ -112,12 +111,17 @@ export default function Home() {
 
   // Use effect to get initial message. This should only happen if there are no companion messages
   useEffect(() => {
-    if (initialMessage && !companionHasOnBoarding && isFetchCompanionMessages) {
+    if (
+      !!initialMessage &&
+      companionHasOnBoarding === false &&
+      isFetchCompanionMessages
+    ) {
       const updatedQuestionsData = [...questions];
       updatedQuestionsData[0].content =
         initialMessage.choices[0].message.content || "";
 
       setQuestions(updatedQuestionsData);
+      setPageStatus("Idle");
     }
   }, [initialMessage]);
 
@@ -211,6 +215,7 @@ export default function Home() {
       handleNext={companionHasOnBoarding ? handleNext : handleNextOnboarding}
       questions={questions}
       loadingAnswer={loadingAnswer}
+      pageStatus={pageStatus}
     />
   );
 }

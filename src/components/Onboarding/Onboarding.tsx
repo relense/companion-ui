@@ -22,6 +22,7 @@ const Onboarding = () => {
     queryKey: ["firsMessage"],
     queryFn: openaiServices.getInitialMessage,
     enabled: false,
+    staleTime: 0,
   });
 
   const { mutate } = useMutation({

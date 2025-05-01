@@ -9,10 +9,12 @@ const ConversationHistoryView = ({
   handleNext,
   questions,
   loadingAnswer,
+  pageStatus,
 }: {
   handleNext: (answer: string) => void;
   questions: Question[];
   loadingAnswer: boolean;
+  pageStatus: "Loading" | "Idle";
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
