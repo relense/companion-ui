@@ -28,6 +28,7 @@ async function signIn(email: string, password: string) {
 
     return {
       status: "Authenticated",
+      token,
     };
   } else {
     return {

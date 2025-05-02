@@ -66,16 +66,12 @@ export default function Home() {
   });
 
   const { mutate: onboardingMessageMutate } = useMutation({
-    mutationFn: (params: { messages: Question[] }) =>
+    mutationFn: (params: { message: Question }) =>
       openaiServices.sendMessageAndSave({
-        messages: params.messages,
+        message: params.message,
         companionId: currentCompanionId || "",
       }),
   });
-
-  useEffect(() => {
-    localStorage.removeItem("userMessages");
-  }, []);
 
   // Use effect to get and set the companion
   useEffect(() => {
@@ -137,10 +133,7 @@ export default function Home() {
     setQuestions(updatedQuestionsData);
     onboardingMessageMutate(
       {
-        messages: [
-          updatedQuestionsData[updatedQuestionsData.length - 2],
-          updatedQuestionsData[updatedQuestionsData.length - 1],
-        ],
+        message: updatedQuestionsData[updatedQuestionsData.length - 1],
       },
       {
         onSuccess: (response) => {
@@ -216,6 +209,7 @@ export default function Home() {
       questions={questions}
       loadingAnswer={loadingAnswer}
       pageStatus={pageStatus}
+      companionHasOnBoarding={companionHasOnBoarding}
     />
   );
 }

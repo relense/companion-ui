@@ -1,10 +1,9 @@
 import { clientAxiosClient } from "../lib/axiosClient";
 
 async function completeAuth(
-  body: ClientApi.CompleteAuthentication.Config["requestBody"]
+  body: ClientApi.CompleteAuthentication.Config["requestBody"],
+  token: string
 ): Promise<ClientApi.CompleteAuthentication.Responses.$200> {
-  const token = localStorage.getItem("tempNovaToken");
-
   const response =
     await clientAxiosClient.post<ClientApi.CompleteAuthentication.Responses.$200>(
       "/auth/complete",

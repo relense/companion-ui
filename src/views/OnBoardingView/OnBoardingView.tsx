@@ -28,9 +28,15 @@ const OnBoardingView = ({
   }, [questions]);
 
   const botMessagebuble = (message: string) => {
+    let newMessage = message;
+
+    if (message.includes("<ONBOARDING_COMPLETE>")) {
+      newMessage = message.replace("<ONBOARDING_COMPLETE>", "").trim();
+    }
+
     return (
       <div className="flex text-start p-4 text-white text-lg font-semibold whitespace-pre-line">
-        {message}
+        {newMessage}
       </div>
     );
   };
@@ -155,7 +161,7 @@ const OnBoardingView = ({
     <PageWrapper>
       <div className="flex flex-col justify-center h-[95%] items-center text-gray-900">
         {renderTitle()}
-        {!showGeneratorButtons && renderConversation()}
+        {renderConversation()}
         {!showGeneratorButtons && renderInput()}
         {showGeneratorButtons && generatorButtons()}
       </div>

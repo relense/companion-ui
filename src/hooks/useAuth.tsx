@@ -82,15 +82,21 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
       const session = await supabaseServices.signIn(email, password);
 
       if (session.status === "Authenticated") {
-        setStatus("Authenticated");
-
         const userMessages = localStorage.getItem("userMessages");
 
         if (userMessages) {
-          userServices.completeAuth({
-            messages: JSON.parse(userMessages),
-          });
+          const response = await userServices.completeAuth(
+            {
+              messages: JSON.parse(userMessages),
+            },
+            session?.token || ""
+          );
+
+          if (response) {
+            localStorage.removeItem("userMessages");
+          }
         }
+        setStatus("Authenticated");
       } else {
         setStatus("Unauthenticated");
       }

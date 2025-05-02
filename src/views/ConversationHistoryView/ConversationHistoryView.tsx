@@ -2,19 +2,21 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
-import PageWrapper from "../PageWrapper/PageWrapper";
 import type { Question } from "../../utils/prompts";
+import PageWrapper from "../PageWrapper/PageWrapper";
 
 const ConversationHistoryView = ({
   handleNext,
   questions,
   loadingAnswer,
   pageStatus,
+  companionHasOnBoarding,
 }: {
   handleNext: (answer: string) => void;
   questions: Question[];
   loadingAnswer: boolean;
   pageStatus: "Loading" | "Idle";
+  companionHasOnBoarding: boolean;
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -100,19 +102,39 @@ const ConversationHistoryView = ({
               }
             }}
           />
-          <div className="flex justify-end">
-            <div
-              className="flex items-center justify-center rounded-full w-7 h-7 bg-white text-black hover:bg-gray-700 hover:text-white cursor-pointer"
-              onClick={() => {
-                if (inputRef.current) {
-                  inputRef.current.style.height = "auto";
-                }
-                handleNext(answer);
-              }}
-            >
-              <FontAwesomeIcon icon={faArrowUp} />
+          {companionHasOnBoarding && pageStatus === "Idle" && (
+            <div className="flex flex-1 justify-between mt-4">
+              <div className="flex items-end flex-1 gap-4">
+                <button
+                  className="text-white bg-blue-500 rounded-lg font-medium p-2 cursor-pointer hover:bg-blue-600"
+                  onClick={() => console.log("CLick")}
+                >
+                  Generate Email
+                </button>
+                <button
+                  className="text-white bg-blue-500 rounded-lg font-medium p-2 cursor-pointer hover:bg-blue-600"
+                  onClick={() => console.log("CLick")}
+                >
+                  Generate Linkedin
+                </button>
+              </div>
+              <div className="flex">
+                <div className="flex justify-end items-end flex-1">
+                  <div
+                    className="flex items-center justify-center rounded-full w-7 h-7 bg-white text-black hover:bg-gray-700 hover:text-white cursor-pointer"
+                    onClick={() => {
+                      if (inputRef.current) {
+                        inputRef.current.style.height = "auto";
+                      }
+                      handleNext(answer);
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faArrowUp} />
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     );

@@ -1,32 +1,191 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
-import Onboarding from "../components/Onboarding/Onboarding";
 import { useAuth } from "../hooks/useAuth";
 import LoadingView from "../views/LoadingView/LoadingView";
+import OnBoardingView from "../views/OnBoardingView/OnBoardingView";
+import type { Question } from "../utils/prompts";
+import { openaiServices } from "../services/openapi.services";
 
 export const Route = createFileRoute("/")({
   component: App,
 });
 
+const questionsData: Question[] = [
+  {
+    role: "assistant",
+    content: "",
+  },
+];
+
 export default function App() {
   const [appStatus, setAppStatus] = useState<"Loading" | "Onboarding">(
     "Loading"
   );
+  const [questions, setQuestions] = useState<Question[]>(questionsData);
+  const [showGeneratorButtons, setShowGeneratorButtons] =
+    useState<boolean>(false);
+  const [loadingAnswer, setLoadingAnswer] = useState<boolean>(true);
 
   const auth = useAuth();
   const navigate = useNavigate();
 
+  const { data, refetch: refetchInitialMessage } = useQuery({
+    queryKey: ["firsMessage"],
+    queryFn: openaiServices.getInitialMessage,
+    enabled: false,
+    staleTime: 0,
+  });
+
+  const { mutate: sendMessageMutate } = useMutation({
+    mutationFn: (params: { messages: Question[] }) =>
+      openaiServices.sendMessage({
+        messages: params.messages,
+      }),
+  });
+
   useEffect(() => {
     if (auth.status === "Authenticated") {
       navigate({ to: "/home" });
-    } else if (auth.status === "Unauthenticated") {
-      setAppStatus("Onboarding");
     }
   }, [auth.status]);
 
+  useEffect(() => {
+    const conversation = localStorage.getItem("userMessages");
+
+    if (conversation && !conversation.includes("<ONBOARDING_COMPLETE>")) {
+      sendMessageMutate(
+        { messages: JSON.parse(conversation) },
+        {
+          onSuccess: (response) => {
+            if (
+              response.choices[0].message.content &&
+              response.choices[0].message.content.includes(
+                "<ONBOARDING_COMPLETE>"
+              )
+            ) {
+              setShowGeneratorButtons(true);
+
+              setQuestions(() => [
+                ...JSON.parse(conversation),
+                {
+                  role: "assistant",
+                  content: response.choices[0].message.content,
+                },
+              ]);
+            } else {
+              setQuestions(() => [
+                ...JSON.parse(conversation),
+                {
+                  role: "assistant",
+                  content: response.choices[0].message.content || "",
+                },
+              ]);
+            }
+
+            localStorage.setItem(
+              "userMessages",
+              JSON.stringify([
+                ...JSON.parse(conversation),
+                {
+                  role: "assistant",
+                  content: response.choices[0].message.content,
+                },
+              ])
+            );
+
+            setAppStatus("Onboarding");
+
+            setLoadingAnswer(false);
+          },
+        }
+      );
+    } else if (conversation && conversation.includes("<ONBOARDING_COMPLETE>")) {
+      setQuestions(JSON.parse(conversation));
+      setShowGeneratorButtons(true);
+      setAppStatus("Onboarding");
+      setLoadingAnswer(false);
+    } else {
+      refetchInitialMessage();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (data && data.choices) {
+      if (
+        data.choices[0].message.content &&
+        data.choices[0].message.content.includes("<ONBOARDING_COMPLETE>")
+      ) {
+        setShowGeneratorButtons(true);
+      }
+      const updatedQuestionsData = [...questions];
+      updatedQuestionsData[0].content = data.choices[0].message.content || "";
+
+      setQuestions(updatedQuestionsData);
+      setAppStatus("Onboarding");
+      setLoadingAnswer(false);
+    }
+  }, [data]);
+
+  const handleNext = (answer: string) => {
+    setLoadingAnswer(true);
+
+    const updatedQuestionsData = [...questions];
+    updatedQuestionsData.push({
+      role: "user",
+      content: answer,
+    });
+
+    setQuestions(updatedQuestionsData);
+    sendMessageMutate(
+      { messages: updatedQuestionsData },
+      {
+        onSuccess: (response) => {
+          if (
+            response.choices[0].message.content &&
+            response.choices[0].message.content.includes(
+              "<ONBOARDING_COMPLETE>"
+            )
+          ) {
+            setShowGeneratorButtons(true);
+            setQuestions((prev) => [
+              ...prev,
+              {
+                role: "assistant",
+                content: response.choices[0].message.content || "",
+              },
+            ]);
+          } else {
+            setQuestions((prev) => [
+              ...prev,
+              {
+                role: "assistant",
+                content: response.choices[0].message.content || "",
+              },
+            ]);
+          }
+
+          localStorage.setItem(
+            "userMessages",
+            JSON.stringify(updatedQuestionsData)
+          );
+
+          setLoadingAnswer(false);
+        },
+      }
+    );
+  };
+
   if (appStatus === "Onboarding") {
-    return <Onboarding />;
+    return (
+      <OnBoardingView
+        handleNext={handleNext}
+        questions={questions}
+        showGeneratorButtons={showGeneratorButtons}
+        loadingAnswer={loadingAnswer}
+      />
+    );
   } else {
     return <LoadingView />;
   }
