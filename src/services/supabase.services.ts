@@ -13,11 +13,32 @@ const checkUserSession = async () => {
     };
 };
 
-async function signIn(email: string, password: string) {
-  const { data } = await supabase.auth.signInWithPassword({
+export type SignInResponse =
+  | { status: "Authenticated"; token: string }
+  | { status: "ConfirmEmail" }
+  | { status: "InvalidCredentials" }
+  | { status: "Unauthenticated" };
+
+async function signIn(
+  email: string,
+  password: string
+): Promise<SignInResponse> {
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
+
+  if (error?.code === "email_not_confirmed") {
+    return {
+      status: "ConfirmEmail",
+    };
+  }
+
+  if (error?.code === "invalid_credentials") {
+    return {
+      status: "InvalidCredentials",
+    };
+  }
 
   if (data.session?.user.role === "authenticated") {
     const token = data?.session?.access_token;

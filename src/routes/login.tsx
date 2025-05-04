@@ -13,6 +13,7 @@ export type LoginPageStatus =
   | "Loading"
   | "Idle"
   | "SignIn"
+  | "InvalidCredentials"
   | "ConfirmEmail"
   | "LoadingSignIn";
 
@@ -34,7 +35,15 @@ export default function Login() {
     setPageStatus("LoadingSignIn");
 
     if (mode === "login") {
-      auth.signIn({ email, password });
+      const result = await auth.signIn({ email, password });
+
+      if (result?.status === "ConfirmEmail") {
+        setPageStatus("ConfirmEmail");
+      }
+
+      if (result?.status === "InvalidCredentials") {
+        setPageStatus("InvalidCredentials");
+      }
     } else {
       const result = await auth.signUp({ email, password });
 

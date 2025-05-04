@@ -29,7 +29,7 @@ const LoginView = ({
       mode === "signup";
 
     return (
-      <div className="flex flex-col w-full gap-4 items-center">
+      <div className="flex flex-col flex-1 w-full gap-4 items-center justify-center">
         <label className="w-3/6 text-white text-xl">Email</label>
         <input
           type="email"
@@ -50,13 +50,25 @@ const LoginView = ({
 
         {pageStatus === "ConfirmEmail" && mode === "signup" && (
           <div className="text-red-600 font-bold text-2xl">
-            Please confirm your email and signin
+            Please confirm your email and sign in
           </div>
         )}
 
         {pageStatus === "SignIn" && mode === "signup" && (
           <div className="text-red-600 font-bold text-2xl">
             Please sign in instead
+          </div>
+        )}
+
+        {pageStatus === "ConfirmEmail" && mode === "login" && (
+          <div className="text-red-600 font-bold text-2xl">
+            Please confirm your email to sign in
+          </div>
+        )}
+
+        {pageStatus === "InvalidCredentials" && mode === "login" && (
+          <div className="text-red-600 font-bold text-2xl">
+            Your email or password is wrong. Try again or create an account.
           </div>
         )}
 
@@ -101,8 +113,8 @@ const LoginView = ({
             </div>
           </div>
           {renderInputs()}
-          <div>
-            <div className="flex flex-1 w-full flex-col gap-10 items-center">
+          <div className="flex justify-start">
+            <div className="flex flex-1 w-full flex-col">
               <div className="flex gap-1 w-3/6 text-2xl text-white font-medium ">
                 {mode === "login" ? (
                   <div>Have an account?</div>

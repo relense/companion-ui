@@ -7,14 +7,19 @@ import {
   type ReactNode,
 } from "react";
 
-import { supabaseServices } from "../services/supabase.services";
+import {
+  supabaseServices,
+  type SignInResponse,
+} from "../services/supabase.services";
 import { useNavigate, useRouter } from "@tanstack/react-router";
 import { userServices } from "../services/user.services";
 
 export type AuthContextStatus =
   | "Initializing"
   | "Unauthenticated"
-  | "Authenticated";
+  | "ConfirmEmail"
+  | "Authenticated"
+  | "InvalidCredentials";
 
 export interface AuthContextType {
   status: AuthContextStatus;
@@ -23,14 +28,17 @@ export interface AuthContextType {
     email: string;
     password: string;
   }) => Promise<{ status: "signin" | "confirmEmail" }>;
-  signIn: (params: { email: string; password: string }) => void;
+  signIn: (params: {
+    email: string;
+    password: string;
+  }) => Promise<SignInResponse>;
   signOut: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   status: "Initializing",
   checkUserSession: () => {},
-  signIn: () => {},
+  signIn: async () => ({ status: "Unauthenticated" }),
   signUp: async () => ({ status: "signin" }),
   signOut: () => {},
 });
@@ -57,14 +65,16 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
         setStatus("Authenticated");
         navigate({ to: "/home" });
       } else {
-        if (
-          router.state.location.pathname !== "/" &&
-          router.state.location.pathname !== "/login"
-        ) {
-          navigate({ to: "/" });
-        }
+        if (status === "Initializing") {
+          if (
+            router.state.location.pathname !== "/" &&
+            router.state.location.pathname !== "/login"
+          ) {
+            navigate({ to: "/" });
+          }
 
-        setStatus("Unauthenticated");
+          setStatus("Unauthenticated");
+        }
       }
     } catch (error) {
       setStatus("Unauthenticated");
@@ -77,7 +87,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   }: {
     email: string;
     password: string;
-  }) => {
+  }): Promise<SignInResponse> => {
     try {
       const session = await supabaseServices.signIn(email, password);
 
@@ -89,19 +99,29 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
             {
               messages: JSON.parse(userMessages),
             },
-            session?.token || ""
+            session.token
           );
 
           if (response) {
             localStorage.removeItem("userMessages");
           }
         }
+
         setStatus("Authenticated");
+        return session;
+      } else if (session.status === "ConfirmEmail") {
+        setStatus("ConfirmEmail");
+        return session;
+      } else if (session.status === "InvalidCredentials") {
+        setStatus("InvalidCredentials");
+        return session;
       } else {
         setStatus("Unauthenticated");
+        return session;
       }
     } catch (error) {
       setStatus("Unauthenticated");
+      return { status: "Unauthenticated" };
     }
   };
 
