@@ -11,7 +11,7 @@ import {
   supabaseServices,
   type SignInResponse,
 } from "../services/supabase.services";
-import { useNavigate, useRouter } from "@tanstack/react-router";
+import { useLocation, useNavigate, useRouter } from "@tanstack/react-router";
 import { userServices } from "../services/user.services";
 
 export type AuthContextStatus =
@@ -52,6 +52,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
 
   const navigate = useNavigate();
   const router = useRouter();
+  const location = useLocation();
 
   useEffect(() => {
     checkUserSession();
@@ -63,7 +64,9 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
 
       if (checkSession.status === "Authenticated") {
         setStatus("Authenticated");
-        navigate({ to: "/home" });
+        if (!location.pathname.includes("signup-callback")) {
+          navigate({ to: "/home" });
+        }
       } else {
         if (status === "Initializing") {
           if (

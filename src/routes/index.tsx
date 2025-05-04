@@ -32,7 +32,7 @@ export default function App() {
   const navigate = useNavigate();
 
   const { data, refetch: refetchInitialMessage } = useQuery({
-    queryKey: ["firsMessage"],
+    queryKey: ["initialMessage"],
     queryFn: openaiServices.getInitialMessage,
     enabled: false,
     staleTime: 0,
@@ -52,64 +52,69 @@ export default function App() {
   }, [auth.status]);
 
   useEffect(() => {
-    const conversation = localStorage.getItem("userMessages");
+    if (auth.status === "Unauthenticated") {
+      const conversation = localStorage.getItem("userMessages");
 
-    if (conversation && !conversation.includes("<ONBOARDING_COMPLETE>")) {
-      sendMessageMutate(
-        { messages: JSON.parse(conversation) },
-        {
-          onSuccess: (response) => {
-            if (
-              response.choices[0].message.content &&
-              response.choices[0].message.content.includes(
-                "<ONBOARDING_COMPLETE>"
-              )
-            ) {
-              setShowGeneratorButtons(true);
+      if (conversation && !conversation.includes("<ONBOARDING_COMPLETE>")) {
+        sendMessageMutate(
+          { messages: JSON.parse(conversation) },
+          {
+            onSuccess: (response) => {
+              if (
+                response.choices[0].message.content &&
+                response.choices[0].message.content.includes(
+                  "<ONBOARDING_COMPLETE>"
+                )
+              ) {
+                setShowGeneratorButtons(true);
 
-              setQuestions(() => [
-                ...JSON.parse(conversation),
-                {
-                  role: "assistant",
-                  content: response.choices[0].message.content,
-                },
-              ]);
-            } else {
-              setQuestions(() => [
-                ...JSON.parse(conversation),
-                {
-                  role: "assistant",
-                  content: response.choices[0].message.content || "",
-                },
-              ]);
-            }
+                setQuestions(() => [
+                  ...JSON.parse(conversation),
+                  {
+                    role: "assistant",
+                    content: response.choices[0].message.content,
+                  },
+                ]);
+              } else {
+                setQuestions(() => [
+                  ...JSON.parse(conversation),
+                  {
+                    role: "assistant",
+                    content: response.choices[0].message.content || "",
+                  },
+                ]);
+              }
 
-            localStorage.setItem(
-              "userMessages",
-              JSON.stringify([
-                ...JSON.parse(conversation),
-                {
-                  role: "assistant",
-                  content: response.choices[0].message.content,
-                },
-              ])
-            );
+              localStorage.setItem(
+                "userMessages",
+                JSON.stringify([
+                  ...JSON.parse(conversation),
+                  {
+                    role: "assistant",
+                    content: response.choices[0].message.content,
+                  },
+                ])
+              );
 
-            setAppStatus("Onboarding");
+              setAppStatus("Onboarding");
 
-            setLoadingAnswer(false);
-          },
-        }
-      );
-    } else if (conversation && conversation.includes("<ONBOARDING_COMPLETE>")) {
-      setQuestions(JSON.parse(conversation));
-      setShowGeneratorButtons(true);
-      setAppStatus("Onboarding");
-      setLoadingAnswer(false);
-    } else {
-      refetchInitialMessage();
+              setLoadingAnswer(false);
+            },
+          }
+        );
+      } else if (
+        conversation &&
+        conversation.includes("<ONBOARDING_COMPLETE>")
+      ) {
+        setQuestions(JSON.parse(conversation));
+        setShowGeneratorButtons(true);
+        setAppStatus("Onboarding");
+        setLoadingAnswer(false);
+      } else {
+        refetchInitialMessage();
+      }
     }
-  }, []);
+  }, [auth]);
 
   useEffect(() => {
     if (data && data.choices) {

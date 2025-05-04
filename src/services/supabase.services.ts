@@ -6,6 +6,7 @@ const checkUserSession = async () => {
   if (data.session?.user.role === "authenticated")
     return {
       status: "Authenticated",
+      token: data.session.access_token,
     };
   else
     return {
@@ -66,6 +67,7 @@ async function signup(email: string, password: string) {
       data: {
         userRole: "CLIENT",
       },
+      emailRedirectTo: "http://localhost:3000/signup-callback",
     },
   });
 

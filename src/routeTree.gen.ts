@@ -11,11 +11,18 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as SignupCallbackImport } from './routes/signup-callback'
 import { Route as LoginImport } from './routes/login'
 import { Route as HomeImport } from './routes/home'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
+
+const SignupCallbackRoute = SignupCallbackImport.update({
+  id: '/signup-callback',
+  path: '/signup-callback',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const LoginRoute = LoginImport.update({
   id: '/login',
@@ -60,6 +67,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
+    '/signup-callback': {
+      id: '/signup-callback'
+      path: '/signup-callback'
+      fullPath: '/signup-callback'
+      preLoaderRoute: typeof SignupCallbackImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -69,12 +83,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/signup-callback': typeof SignupCallbackRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/signup-callback': typeof SignupCallbackRoute
 }
 
 export interface FileRoutesById {
@@ -82,14 +98,15 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/signup-callback': typeof SignupCallbackRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/home' | '/login'
+  fullPaths: '/' | '/home' | '/login' | '/signup-callback'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/home' | '/login'
-  id: '__root__' | '/' | '/home' | '/login'
+  to: '/' | '/home' | '/login' | '/signup-callback'
+  id: '__root__' | '/' | '/home' | '/login' | '/signup-callback'
   fileRoutesById: FileRoutesById
 }
 
@@ -97,12 +114,14 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
+  SignupCallbackRoute: typeof SignupCallbackRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
+  SignupCallbackRoute: SignupCallbackRoute,
 }
 
 export const routeTree = rootRoute
@@ -117,7 +136,8 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/home",
-        "/login"
+        "/login",
+        "/signup-callback"
       ]
     },
     "/": {
@@ -128,6 +148,9 @@ export const routeTree = rootRoute
     },
     "/login": {
       "filePath": "login.tsx"
+    },
+    "/signup-callback": {
+      "filePath": "signup-callback.tsx"
     }
   }
 }
