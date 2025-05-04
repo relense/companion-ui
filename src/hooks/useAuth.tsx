@@ -94,17 +94,15 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
       if (session.status === "Authenticated") {
         const userMessages = localStorage.getItem("userMessages");
 
-        if (userMessages) {
-          const response = await userServices.completeAuth(
-            {
-              messages: JSON.parse(userMessages),
-            },
-            session.token
-          );
+        const response = await userServices.completeAuth(
+          {
+            messages: userMessages ? JSON.parse(userMessages) : [],
+          },
+          session.token
+        );
 
-          if (response) {
-            localStorage.removeItem("userMessages");
-          }
+        if (response) {
+          localStorage.removeItem("userMessages");
         }
 
         setStatus("Authenticated");
