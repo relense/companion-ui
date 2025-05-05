@@ -6,12 +6,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "@tanstack/react-router";
 
 const Sidebar = () => {
-  return (
-    <div className="h-full w-100 border-r-2 bg-neutral-900 border-r-black text-gray-300">
-      <div className="h-15 p-10 flex justify-between ">
-        <FontAwesomeIcon icon={faTableColumns} size="xl" />
-        <FontAwesomeIcon icon={faPenToSquare} size="xl" />
-      </div>
+  const renderEmailCampaignLink = () => {
+    return (
       <div className="flex flex-col gap-6">
         <div className="flex w-full  text-lg flex-col font-bold">
           <div className="px-10 py-2">Today</div>
@@ -23,6 +19,16 @@ const Sidebar = () => {
           </Link>
         </div>
       </div>
+    );
+  };
+
+  return (
+    <div className="h-full w-100 border-r-2 bg-neutral-900 border-r-black text-gray-300">
+      <div className="h-15 p-10 flex justify-between ">
+        <FontAwesomeIcon icon={faTableColumns} size="xl" />
+        <FontAwesomeIcon icon={faPenToSquare} size="xl" />
+      </div>
+      {renderEmailCampaignLink()}
     </div>
   );
 };

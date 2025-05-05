@@ -102,8 +102,8 @@ const ConversationHistoryView = ({
               }
             }}
           />
-          {companionHasOnBoarding && pageStatus === "Idle" && (
-            <div className="flex flex-1 justify-between mt-4">
+          <div className="flex flex-1 justify-between mt-4">
+            {companionHasOnBoarding && pageStatus === "Idle" && (
               <div className="flex items-end flex-1 gap-4">
                 <button
                   className="text-white bg-blue-500 rounded-lg font-medium p-2 cursor-pointer hover:bg-blue-600"
@@ -118,23 +118,24 @@ const ConversationHistoryView = ({
                   Generate Linkedin
                 </button>
               </div>
-              <div className="flex">
-                <div className="flex justify-end items-end flex-1">
-                  <div
-                    className="flex items-center justify-center rounded-full w-7 h-7 bg-white text-black hover:bg-gray-700 hover:text-white cursor-pointer"
-                    onClick={() => {
-                      if (inputRef.current) {
-                        inputRef.current.style.height = "auto";
-                      }
-                      handleNext(answer);
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faArrowUp} />
-                  </div>
+            )}
+
+            <div className="flex">
+              <div className="flex justify-end items-end flex-1">
+                <div
+                  className="flex items-center justify-center rounded-full w-7 h-7 bg-white text-black hover:bg-gray-700 hover:text-white cursor-pointer"
+                  onClick={() => {
+                    if (inputRef.current) {
+                      inputRef.current.style.height = "auto";
+                    }
+                    handleNext(answer);
+                  }}
+                >
+                  <FontAwesomeIcon icon={faArrowUp} />
                 </div>
               </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     );
