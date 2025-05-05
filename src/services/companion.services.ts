@@ -25,7 +25,6 @@ async function getAllCompanions(): Promise<ClientApi.GetCompanions.Responses.$20
   const response =
     await clientAxiosClient.get<ClientApi.GetCompanions.Responses.$200>(
       `/companions`,
-
       {
         headers: {
           apikey: token,

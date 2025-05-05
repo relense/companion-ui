@@ -40,18 +40,6 @@ async function sendMessageAndSave(
   return response.data;
 }
 
-async function createEmail(
-  body: ClientApi.CreateEmail.Config["requestBody"]
-): Promise<ClientApi.CreateEmail.Responses.$200> {
-  const response =
-    await clientAxiosClient.post<ClientApi.CreateEmail.Responses.$200>(
-      "/gpt/email",
-      body
-    );
-
-  return response.data;
-}
-
 async function generateMoreHistory(
   body: ClientApi.CreateMoreHistory.Config["requestBody"]
 ): Promise<ClientApi.CreateMoreHistory.Responses.$200> {
@@ -74,7 +62,6 @@ const openaiServices = {
   getInitialMessage,
   sendMessage,
   sendMessageAndSave,
-  createEmail,
   generateMoreHistory,
 };
 

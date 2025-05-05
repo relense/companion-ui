@@ -11,12 +11,14 @@ const ConversationHistoryView = ({
   loadingAnswer,
   pageStatus,
   companionHasOnBoarding,
+  generateEmail,
 }: {
   handleNext: (answer: string) => void;
   questions: Question[];
   loadingAnswer: boolean;
   pageStatus: "Loading" | "Idle";
   companionHasOnBoarding: boolean;
+  generateEmail: () => void;
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -107,7 +109,7 @@ const ConversationHistoryView = ({
               <div className="flex items-end flex-1 gap-4">
                 <button
                   className="text-white bg-blue-500 rounded-lg font-medium p-2 cursor-pointer hover:bg-blue-600"
-                  onClick={() => console.log("CLick")}
+                  onClick={() => generateEmail()}
                 >
                   Generate Email
                 </button>

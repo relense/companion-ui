@@ -6,6 +6,7 @@ import { openaiServices } from "../services/openapi.services";
 import { companionServices } from "../services/companion.services";
 import ConversationHistoryView from "../views/ConversationHistoryView/ConversationHistoryView";
 import { useAuth } from "../hooks/useAuth";
+import { emailServices } from "../services/email.service";
 
 export const Route = createFileRoute("/home")({
   component: Home,
@@ -203,6 +204,14 @@ export default function Home() {
     );
   };
 
+  const generateEmail = async () => {
+    const response = await emailServices.createEmailCampaign(
+      currentCompanionId || ""
+    );
+
+    console.log(response);
+  };
+
   return (
     <ConversationHistoryView
       handleNext={companionHasOnBoarding ? handleNext : handleNextOnboarding}
@@ -210,6 +219,7 @@ export default function Home() {
       loadingAnswer={loadingAnswer}
       pageStatus={pageStatus}
       companionHasOnBoarding={companionHasOnBoarding}
+      generateEmail={generateEmail}
     />
   );
 }

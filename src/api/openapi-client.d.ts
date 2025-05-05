@@ -323,6 +323,37 @@ declare namespace ClientApi {
       successResponses: Responses.$200;
     }
   }
+  namespace CreateEmailCampaign {
+    export type QueryParameters = {};
+    export interface PathParameters {
+      companionId: string;
+    }
+    export type RequestBody = {};
+    namespace Responses {
+      export interface $201 {
+        emailCampaignId: string;
+        companionId: string;
+      }
+      export interface $400 {
+        message: string;
+      }
+      export interface $500 {
+        message: string;
+      }
+    }
+    export interface Config {
+      operationId: "createEmailCampaign";
+      method: "post";
+      expressPath: "/companions/:companionId/create-campaign";
+      openapiPath: "/companions/{companionId}/create-campaign";
+      pathParams: PathParameters;
+      queryParams: QueryParameters;
+      requestBody: RequestBody;
+      headers?: any;
+      responses: Responses.$201 | Responses.$400 | Responses.$500;
+      successResponses: Responses.$201;
+    }
+  }
   namespace SendMessagesAndSave {
     export type QueryParameters = {};
     export type PathParameters = {};
