@@ -35,8 +35,8 @@ async function getEmailCampaign(
   const token = localStorage.getItem("tempNovaToken");
 
   const response =
-    await clientAxiosClient.get<ClientApi.CreateEmailCampaign.Responses.$201>(
-      `/emailCampaign/${emailCampaignId}`,
+    await clientAxiosClient.get<ClientApi.GetEmailCampaign.Responses.$200>(
+      `/emailCampaigns/${emailCampaignId}`,
       {
         headers: {
           apikey: token,

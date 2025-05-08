@@ -23,7 +23,7 @@ function RouteComponent() {
     if (emailCampaignData) {
       console.log("ESTOU Numa campanha: ", emailCampaignData);
     }
-  }, []);
+  }, [emailCampaignData]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
