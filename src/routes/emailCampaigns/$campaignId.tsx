@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import PageWrapper from "../../views/PageWrapper/PageWrapper";
@@ -10,9 +10,13 @@ export const Route = createFileRoute("/emailCampaigns/$campaignId")({
 });
 
 function RouteComponent() {
+  const [pageStatus, setPageStatus] = useState<
+    "Loading" | "Onboarding" | "Writing"
+  >("Loading");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const { campaignId } = Route.useParams();
+  const [, setIsIndividual] = useState<boolean | null>(null);
 
   const { data: emailCampaignData } = useQuery({
     queryKey: ["emailCampaign", campaignId],
@@ -21,7 +25,15 @@ function RouteComponent() {
 
   useEffect(() => {
     if (emailCampaignData) {
-      console.log("ESTOU Numa campanha: ", emailCampaignData);
+      if (
+        emailCampaignData.isIndividual !== null &&
+        emailCampaignData.isIndividual !== undefined
+      ) {
+        setIsIndividual(emailCampaignData.isIndividual);
+        setPageStatus("Writing");
+      } else {
+        setPageStatus("Onboarding");
+      }
     }
   }, [emailCampaignData]);
 
@@ -65,10 +77,34 @@ function RouteComponent() {
     );
   };
 
+  const renderEmailOnboarding = () => {
+    return (
+      <div className="flex flex-1 w-full gap-16">
+        <div className="flex flex-1 flex-col justify-center items-center text-white text-center text-4xl cursor-pointer hover:bg-gray-700 rounded-2xl">
+          <img
+            className="w-120 h-120 "
+            src="/imgs/massEmail.png"
+            alt="Mass Email Logo"
+          />
+          <div>Mass Email</div>
+        </div>
+        <div className="flex flex-1 flex-col justify-center items-center text-white text-center text-4xl cursor-pointer hover:bg-gray-700 rounded-2xl">
+          <img
+            className="w-120 h-120"
+            src="/imgs/onePerson.png"
+            alt="One Person Email Logo"
+          />
+          <div>1 Person Email</div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <PageWrapper>
       <div className="flex flex-col justify-center h-[95%] items-center text-gray-900">
-        {renderConversation()}
+        {pageStatus === "Onboarding" && renderEmailOnboarding()}
+        {pageStatus === "Writing" && renderConversation()}
       </div>
     </PageWrapper>
   );
