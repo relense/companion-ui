@@ -45,7 +45,6 @@ async function getEmailCampaign(
     );
 
   if (response) {
-    console.log(response);
     return {
       companionId: response.data.companionId,
       emailCampaignId: response.data.emailCampaignId,
@@ -58,9 +57,32 @@ async function getEmailCampaign(
   };
 }
 
+async function getAllEmailCampaigns(
+  companionId: string
+): Promise<ClientApi.GetEmailCampaigns.Responses.$200> {
+  try {
+    const token = localStorage.getItem("tempNovaToken");
+
+    const response =
+      await clientAxiosClient.get<ClientApi.GetEmailCampaigns.Responses.$200>(
+        `/companions/${companionId}/emailCampaigns`,
+        {
+          headers: {
+            apikey: token,
+          },
+        }
+      );
+
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+}
+
 const emailServices = {
   createEmailCampaign,
   getEmailCampaign,
+  getAllEmailCampaigns,
 };
 
 export { emailServices };

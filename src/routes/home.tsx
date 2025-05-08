@@ -7,6 +7,7 @@ import { companionServices } from "../services/companion.services";
 import ConversationHistoryView from "../views/ConversationHistoryView/ConversationHistoryView";
 import { useAuth } from "../hooks/useAuth";
 import { emailServices } from "../services/email.service";
+import { useGlobal } from "../hooks/useGlobal";
 
 export const Route = createFileRoute("/home")({
   component: Home,
@@ -23,11 +24,9 @@ export default function Home() {
   const [pageStatus, setPageStatus] = useState<"Loading" | "Idle">("Loading");
   const [questions, setQuestions] = useState<Question[]>(questionsData);
   const [loadingAnswer, setLoadingAnswer] = useState<boolean>(false);
-  const [currentCompanionId, setCurrentCompanionId] = useState<
-    string | undefined
-  >(undefined);
   const auth = useAuth();
   const navigate = useNavigate();
+  const global = useGlobal();
 
   const [companionHasOnBoarding, setCompanionHasOnBoarding] =
     useState<boolean>(false);
@@ -50,10 +49,10 @@ export default function Home() {
 
   const { data: companionMessages, isFetched: isFetchCompanionMessages } =
     useQuery({
-      queryKey: ["companionMessages", currentCompanionId],
+      queryKey: ["companionMessages", global.currentCompanionId],
       queryFn: () =>
-        companionServices.getAllCompanionMessages(currentCompanionId!),
-      enabled: !!currentCompanionId,
+        companionServices.getAllCompanionMessages(global.currentCompanionId!),
+      enabled: !!global.currentCompanionId,
       staleTime: 0,
     });
 
@@ -62,7 +61,7 @@ export default function Home() {
     mutationFn: (params: { messages: Question[] }) =>
       openaiServices.generateMoreHistory({
         messages: params.messages,
-        companionId: currentCompanionId || "",
+        companionId: global.currentCompanionId || "",
       }),
   });
 
@@ -70,19 +69,15 @@ export default function Home() {
     mutationFn: (params: { message: Question }) =>
       openaiServices.sendMessageAndSave({
         message: params.message,
-        companionId: currentCompanionId || "",
+        companionId: global.currentCompanionId || "",
       }),
   });
 
   // Use effect to get and set the companion
   useEffect(() => {
     if (companionsData?.items && companionsData?.items.length > 0) {
-      setCurrentCompanionId(
-        companionsData?.items?.[companionsData?.items.length - 1]?.companionId
-      );
-      setCompanionHasOnBoarding(
-        companionsData?.items?.[companionsData?.items.length - 1]?.hasOnBoarding
-      );
+      setCompanionHasOnBoarding(companionsData?.items?.[0]?.hasOnBoarding);
+      global.updateCompanionId(companionsData?.items?.[0]?.companionId);
     }
   }, [companionsData]);
 
@@ -206,7 +201,7 @@ export default function Home() {
 
   const generateEmail = async () => {
     const response = await emailServices.createEmailCampaign(
-      currentCompanionId || ""
+      global.currentCompanionId || ""
     );
 
     navigate({ to: `/emailCampaigns/${response.emailCampaignId}` });

@@ -3,19 +3,50 @@ import {
   faTableColumns,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { emailServices } from "../../services/email.service";
+import { useGlobal } from "../../hooks/useGlobal";
 
 const Sidebar = () => {
+  const global = useGlobal();
+
+  const { data } = useQuery({
+    queryKey: ["getAllCampaigns", global.currentCompanionId],
+    queryFn: () =>
+      emailServices.getAllEmailCampaigns(global.currentCompanionId),
+  });
+
   const renderEmailCampaignLink = () => {
     return (
       <div className="flex flex-col gap-6">
         <div className="flex w-full  text-lg flex-col font-bold">
-          <div className="px-10 py-2">Today</div>
+          {data?.items.map((item) => {
+            return (
+              <Link
+                key={item.emailCampaignId}
+                to={`/emailCampaigns/$campaignId`}
+                params={{ campaignId: item.emailCampaignId }}
+                className="flex flex-1 px-10 py-2 text-xl cursor-pointer hover:bg-gray-500 font-bold"
+              >
+                {item.emailCampaignId}
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const renderHistory = () => {
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="flex w-full  text-lg flex-col font-bold">
           <Link
-            to={"/home"}
+            to={`/home`}
             className="flex flex-1 px-10 py-2 text-xl cursor-pointer hover:bg-gray-500 font-bold"
           >
-            Email Campaign 1
+            History
           </Link>
         </div>
       </div>
@@ -28,6 +59,7 @@ const Sidebar = () => {
         <FontAwesomeIcon icon={faTableColumns} size="xl" />
         <FontAwesomeIcon icon={faPenToSquare} size="xl" />
       </div>
+      {renderHistory()}
       {renderEmailCampaignLink()}
     </div>
   );
