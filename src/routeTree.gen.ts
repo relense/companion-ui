@@ -15,6 +15,7 @@ import { Route as SignupCallbackImport } from './routes/signup-callback'
 import { Route as LoginImport } from './routes/login'
 import { Route as HomeImport } from './routes/home'
 import { Route as IndexImport } from './routes/index'
+import { Route as EmailCampaignsCampaignIdImport } from './routes/emailCampaigns/$campaignId'
 
 // Create/Update Routes
 
@@ -39,6 +40,12 @@ const HomeRoute = HomeImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const EmailCampaignsCampaignIdRoute = EmailCampaignsCampaignIdImport.update({
+  id: '/emailCampaigns/$campaignId',
+  path: '/emailCampaigns/$campaignId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -74,6 +81,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupCallbackImport
       parentRoute: typeof rootRoute
     }
+    '/emailCampaigns/$campaignId': {
+      id: '/emailCampaigns/$campaignId'
+      path: '/emailCampaigns/$campaignId'
+      fullPath: '/emailCampaigns/$campaignId'
+      preLoaderRoute: typeof EmailCampaignsCampaignIdImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -84,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/signup-callback': typeof SignupCallbackRoute
+  '/emailCampaigns/$campaignId': typeof EmailCampaignsCampaignIdRoute
 }
 
 export interface FileRoutesByTo {
@@ -91,6 +106,7 @@ export interface FileRoutesByTo {
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/signup-callback': typeof SignupCallbackRoute
+  '/emailCampaigns/$campaignId': typeof EmailCampaignsCampaignIdRoute
 }
 
 export interface FileRoutesById {
@@ -99,14 +115,31 @@ export interface FileRoutesById {
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/signup-callback': typeof SignupCallbackRoute
+  '/emailCampaigns/$campaignId': typeof EmailCampaignsCampaignIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/home' | '/login' | '/signup-callback'
+  fullPaths:
+    | '/'
+    | '/home'
+    | '/login'
+    | '/signup-callback'
+    | '/emailCampaigns/$campaignId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/home' | '/login' | '/signup-callback'
-  id: '__root__' | '/' | '/home' | '/login' | '/signup-callback'
+  to:
+    | '/'
+    | '/home'
+    | '/login'
+    | '/signup-callback'
+    | '/emailCampaigns/$campaignId'
+  id:
+    | '__root__'
+    | '/'
+    | '/home'
+    | '/login'
+    | '/signup-callback'
+    | '/emailCampaigns/$campaignId'
   fileRoutesById: FileRoutesById
 }
 
@@ -115,6 +148,7 @@ export interface RootRouteChildren {
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
   SignupCallbackRoute: typeof SignupCallbackRoute
+  EmailCampaignsCampaignIdRoute: typeof EmailCampaignsCampaignIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -122,6 +156,7 @@ const rootRouteChildren: RootRouteChildren = {
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
   SignupCallbackRoute: SignupCallbackRoute,
+  EmailCampaignsCampaignIdRoute: EmailCampaignsCampaignIdRoute,
 }
 
 export const routeTree = rootRoute
@@ -137,7 +172,8 @@ export const routeTree = rootRoute
         "/",
         "/home",
         "/login",
-        "/signup-callback"
+        "/signup-callback",
+        "/emailCampaigns/$campaignId"
       ]
     },
     "/": {
@@ -151,6 +187,9 @@ export const routeTree = rootRoute
     },
     "/signup-callback": {
       "filePath": "signup-callback.tsx"
+    },
+    "/emailCampaigns/$campaignId": {
+      "filePath": "emailCampaigns/$campaignId.tsx"
     }
   }
 }

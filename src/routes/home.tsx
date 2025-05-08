@@ -209,7 +209,7 @@ export default function Home() {
       currentCompanionId || ""
     );
 
-    console.log(response);
+    navigate({ to: `/emailCampaigns/${response.emailCampaignId}` });
   };
 
   return (
