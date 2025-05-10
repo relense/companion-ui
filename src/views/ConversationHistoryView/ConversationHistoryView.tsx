@@ -80,7 +80,7 @@ const ConversationHistoryView = ({
     return (
       <div className="flex justify-center flex-col max-w-6xl w-full">
         {loadingAnswer && <div className="text-white">spinner</div>}
-        <div className="p-3 text-sm rounded-xl bg-gray-500">
+        <div className="flex flex-col p-3 text-sm rounded-xl bg-gray-500">
           <textarea
             disabled={loadingAnswer}
             ref={inputRef}
@@ -104,9 +104,9 @@ const ConversationHistoryView = ({
               }
             }}
           />
-          <div className="flex flex-1 justify-between mt-4">
+          <div className="flex mt-4 w-full">
             {companionHasOnBoarding && pageStatus === "Idle" && (
-              <div className="flex items-end flex-1 gap-4">
+              <div className="flex flex-1 w-full gap-4">
                 <button
                   className="text-white bg-blue-500 rounded-lg font-medium p-2 cursor-pointer hover:bg-blue-600"
                   onClick={() => generateEmail()}
@@ -122,19 +122,17 @@ const ConversationHistoryView = ({
               </div>
             )}
 
-            <div className="flex">
-              <div className="flex justify-end items-end flex-1">
-                <div
-                  className="flex items-center justify-center rounded-full w-7 h-7 bg-white text-black hover:bg-gray-700 hover:text-white cursor-pointer"
-                  onClick={() => {
-                    if (inputRef.current) {
-                      inputRef.current.style.height = "auto";
-                    }
-                    handleNext(answer);
-                  }}
-                >
-                  <FontAwesomeIcon icon={faArrowUp} />
-                </div>
+            <div className="flex items-end">
+              <div
+                className="flex items-center justify-center rounded-full w-7 h-7 bg-white text-black hover:bg-gray-700 hover:text-white cursor-pointer"
+                onClick={() => {
+                  if (inputRef.current) {
+                    inputRef.current.style.height = "auto";
+                  }
+                  handleNext(answer);
+                }}
+              >
+                <FontAwesomeIcon icon={faArrowUp} />
               </div>
             </div>
           </div>

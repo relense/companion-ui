@@ -29,32 +29,33 @@ async function createEmailCampaign(
   };
 }
 
-async function getEmailCampaign(
-  emailCampaignId: string
-): Promise<ClientApi.GetEmailCampaign.Responses.$200> {
-  const token = localStorage.getItem("tempNovaToken");
+async function getEmailCampaign(emailCampaignId: string) {
+  try {
+    const token = localStorage.getItem("tempNovaToken");
 
-  const response =
-    await clientAxiosClient.get<ClientApi.GetEmailCampaign.Responses.$200>(
-      `/emailCampaigns/${emailCampaignId}`,
-      {
-        headers: {
-          apikey: token,
-        },
-      }
-    );
+    const response =
+      await clientAxiosClient.get<ClientApi.GetEmailCampaign.Responses.$200>(
+        `/emailCampaigns/${emailCampaignId}`,
+        {
+          headers: {
+            apikey: token,
+          },
+        }
+      );
 
-  if (response) {
-    return {
-      companionId: response.data.companionId,
-      emailCampaignId: response.data.emailCampaignId,
-    };
+    if (response) {
+      return {
+        companionId: response.data.companionId,
+        emailCampaignId: response.data.emailCampaignId,
+        name: response.data.name,
+        createdAt: response.data.createdAt,
+        emails: response.data.emails,
+        isIndividual: response.data.isIndividual,
+      };
+    }
+  } catch (error: any) {
+    console.log(error);
   }
-
-  return {
-    companionId: "",
-    emailCampaignId: emailCampaignId,
-  };
 }
 
 async function getAllEmailCampaigns(
@@ -79,10 +80,39 @@ async function getAllEmailCampaigns(
   }
 }
 
+async function updateEmailCampaign(params: {
+  emailCampaignId: string;
+  name: string;
+  isIndividual: boolean;
+}) {
+  try {
+    const token = localStorage.getItem("tempNovaToken");
+
+    const response =
+      await clientAxiosClient.patch<ClientApi.UpdateEmailCampaign.Responses.$200>(
+        `/emailCampaigns/${params.emailCampaignId}`,
+        {
+          name: params.name,
+          isIndividual: params.isIndividual,
+        },
+        {
+          headers: {
+            apikey: token,
+          },
+        }
+      );
+
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+}
+
 const emailServices = {
   createEmailCampaign,
   getEmailCampaign,
   getAllEmailCampaigns,
+  updateEmailCampaign,
 };
 
 export { emailServices };

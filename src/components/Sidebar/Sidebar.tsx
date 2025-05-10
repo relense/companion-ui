@@ -21,18 +21,19 @@ const Sidebar = () => {
     return (
       <div className="flex flex-col gap-6">
         <div className="flex w-full  text-lg flex-col font-bold">
-          {data?.items.map((item) => {
-            return (
-              <Link
-                key={item.emailCampaignId}
-                to={`/emailCampaigns/$campaignId`}
-                params={{ campaignId: item.emailCampaignId }}
-                className="flex flex-1 px-10 py-2 text-xl cursor-pointer hover:bg-gray-500 font-bold"
-              >
-                {item.emailCampaignId}
-              </Link>
-            );
-          })}
+          {Array.isArray(data?.items) &&
+            data?.items.map((item) => {
+              return (
+                <Link
+                  key={item.emailCampaignId}
+                  to={`/emailCampaigns/$campaignId`}
+                  params={{ campaignId: item.emailCampaignId }}
+                  className="flex flex-1 px-10 py-2 text-xl cursor-pointer hover:bg-gray-500 font-bold"
+                >
+                  {item?.name || "Companion"}
+                </Link>
+              );
+            })}
         </div>
       </div>
     );
