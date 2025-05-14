@@ -63,6 +63,9 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
       const checkSession = await supabaseServices.checkUserSession();
 
       if (checkSession.status === "Authenticated") {
+        if (checkSession.token) {
+          localStorage.setItem("tempNovaToken", checkSession.token);
+        }
         setStatus("Authenticated");
         if (!location.pathname.includes("signup-callback")) {
           navigate({ to: "/home" });

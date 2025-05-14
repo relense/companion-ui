@@ -6,6 +6,7 @@ import {
   faCircle,
   faCopy,
   faEnvelope,
+  faEnvelopesBulk,
   faNoteSticky,
   faPeopleArrows,
   faRefresh,
@@ -90,7 +91,9 @@ const EmailCampaignView = ({
         <h1 className="flex items-center gap-4 text-4xl font-semibold pb-4">
           <FontAwesomeIcon
             title="Email title"
-            icon={faEnvelope}
+            icon={
+              emailCampaignData?.isIndividual ? faEnvelope : faEnvelopesBulk
+            }
             onClick={() => handleLike()}
           />{" "}
           First Email |{" "}
@@ -152,13 +155,24 @@ const EmailCampaignView = ({
         <div className="flex flex-row gap-2">
           <div className="font-semibold min-w-fit">
             <FontAwesomeIcon
+              title="Email Sentiment Status"
+              icon={faEnvelope}
+              onClick={() => handleLike()}
+            />{" "}
+            Email Status:
+          </div>
+          <div className="cursor-pointer">Unsent</div>
+        </div>
+        <div className="flex flex-row gap-2">
+          <div className="font-semibold min-w-fit">
+            <FontAwesomeIcon
               title="Email Replied Status"
               icon={faCircle}
               onClick={() => handleLike()}
             />{" "}
             {emailCampaignData?.isIndividual ? "Replied:" : "Replies:"}
           </div>
-          <div>
+          <div className="cursor-pointer">
             {emailCampaignData?.isIndividual ? "Yes" : `${"23"} Replies`}
           </div>
         </div>
@@ -171,47 +185,42 @@ const EmailCampaignView = ({
             />{" "}
             Sentiment:
           </div>
-          <div>Positive</div>
+          <div className="cursor-pointer">Positive</div>
         </div>
-        {emailCampaignData && emailCampaignData.isIndividual && (
-          <div className="flex flex-row gap-2">
-            <div className="font-semibold min-w-fit">
-              <FontAwesomeIcon
-                title="Email Replied Date"
-                icon={faCalendar}
-                onClick={() => handleLike()}
-              />{" "}
-              Replied on:
-            </div>
-            <div>May 13, 2025</div>
+
+        <div className="flex flex-row gap-2">
+          <div className="font-semibold min-w-fit">
+            <FontAwesomeIcon
+              title="Email First Replied Date"
+              icon={faCalendar}
+              onClick={() => handleLike()}
+            />{" "}
+            First Reply:
           </div>
-        )}
-        {emailCampaignData && !emailCampaignData.isIndividual && (
-          <>
-            <div className="flex flex-row gap-2">
-              <div className="font-semibold min-w-fit">
-                <FontAwesomeIcon
-                  title="Email First Replied Date"
-                  icon={faCalendar}
-                  onClick={() => handleLike()}
-                />{" "}
-                First Reply
-              </div>
-              <div>May 13, 2025</div>
-            </div>
-            <div className="flex flex-row gap-2">
-              <div className="font-semibold min-w-fit">
-                <FontAwesomeIcon
-                  title="Email Last Replied Date"
-                  icon={faCalendar}
-                  onClick={() => handleLike()}
-                />{" "}
-                Last Reply
-              </div>
-              <div>May 13, 2025</div>
-            </div>
-          </>
-        )}
+          <div className="cursor-pointer">May 13, 2025</div>
+        </div>
+        <div className="flex flex-row gap-2">
+          <div className="font-semibold min-w-fit">
+            <FontAwesomeIcon
+              title="Email Last Replied Date"
+              icon={faCalendar}
+              onClick={() => handleLike()}
+            />{" "}
+            Last Reply:
+          </div>
+          <div className="cursor-pointer">May 13, 2025</div>
+        </div>
+        <div className="flex flex-row gap-2">
+          <div className="font-semibold min-w-fit">
+            <FontAwesomeIcon
+              title="Email Last Replied Date"
+              icon={faCalendar}
+              onClick={() => handleLike()}
+            />{" "}
+            Call Scheduled:
+          </div>
+          <div className="cursor-pointer">May 13, 2025</div>
+        </div>
         <div className="flex flex-row gap-2">
           <div className="font-semibold min-w-fit">
             <FontAwesomeIcon
@@ -221,7 +230,9 @@ const EmailCampaignView = ({
             />{" "}
             Notes:
           </div>
-          <div>Mentioned interest in a demo next week.</div>
+          <div className="cursor-pointer">
+            Mentioned interest in a demo next week.
+          </div>
         </div>
       </div>
     );
@@ -233,7 +244,7 @@ const EmailCampaignView = ({
         ref={scrollContainerRef}
         className="max-w-7/12 w-full flex flex-1 overflow-auto scrollbar-none justify-center"
       >
-        {currentEmailIndex !== -1 && (
+        {currentEmailIndex !== -1 && emails[currentEmailIndex] && (
           <div className="flex flex-row gap-16">
             {renderEmail(
               emails[currentEmailIndex].emailId,
@@ -248,7 +259,7 @@ const EmailCampaignView = ({
 
   return (
     <PageWrapper>
-      <div className="flex flex-col justify-center h-full items-center text-gray-900">
+      <div className="flex flex-col justify-center h-full items-center text-gray-900 cursor-default">
         {pageStatus === "Onboarding" && renderEmailOnboarding()}
         {pageStatus === "Writing" && <>{renderEmailOverview()}</>}
       </div>

@@ -4,17 +4,21 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
+
 import { emailServices } from "../../services/email.service";
 import { useGlobal } from "../../hooks/useGlobal";
 
 const Sidebar = () => {
   const global = useGlobal();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isActive = (pathStart: string) => pathname.startsWith(pathStart);
 
   const { data } = useQuery({
     queryKey: ["getAllCampaigns", global.currentCompanionId],
     queryFn: () =>
       emailServices.getAllEmailCampaigns(global.currentCompanionId),
+    enabled: global.currentCompanionId !== "",
   });
 
   const renderEmailCampaignLink = () => {
@@ -28,7 +32,7 @@ const Sidebar = () => {
                   key={item.emailCampaignId}
                   to={`/emailCampaigns/$campaignId`}
                   params={{ campaignId: item.emailCampaignId }}
-                  className="flex flex-1 px-10 py-2 text-xl cursor-pointer hover:bg-gray-500 font-bold"
+                  className={`flex flex-1 px-10 py-2 text-xl cursor-pointer hover:bg-gray-500 font-bold ${isActive(`/emailCampaigns/${item.emailCampaignId}`) ? "bg-gray-600" : ""}`}
                 >
                   {item?.name || "Companion"}
                 </Link>
@@ -45,7 +49,7 @@ const Sidebar = () => {
         <div className="flex w-full  text-lg flex-col font-bold">
           <Link
             to={`/home`}
-            className="flex flex-1 px-10 py-2 text-xl cursor-pointer hover:bg-gray-500 font-bold"
+            className={`flex flex-1 px-10 py-2 text-xl cursor-pointer hover:bg-gray-500 font-bold ${isActive("/home") ? "bg-gray-600" : ""}`}
           >
             History
           </Link>
