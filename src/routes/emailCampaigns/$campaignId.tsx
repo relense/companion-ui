@@ -4,6 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { emailServices } from "../../services/email.service";
 import EmailCampaignView from "../../views/EmailCampaignView/EmailCampaignView";
+import EmailCampaignIndividualOnboardingView from "../../views/EmailCampaignIndividualOnboardingView/EmailCampaignIndividualOnboardingView";
 
 export const Route = createFileRoute("/emailCampaigns/$campaignId")({
   component: RouteComponent,
@@ -127,23 +128,30 @@ function RouteComponent() {
     setIsFollowUp((prev) => !prev);
   };
 
-  return (
-    <EmailCampaignView
-      pageStatus={pageStatus}
-      onHandleOnboardingChoice={onHandleOnboardingChoice}
-      like={like}
-      dislike={dislike}
-      isRefresh={isRefresh}
-      isCopy={isCopy}
-      isFollowUp={isFollowUp}
-      handleLike={handleLike}
-      handleDislike={handleDislike}
-      handleIsRefresh={handleIsRefresh}
-      handleCopy={handleCopy}
-      handleFollowUp={handleFollowUp}
-      currentEmailIndex={currentEmailIndex}
-      emailCampaignData={emailCampaignData}
-      emails={emails}
-    />
-  );
+  if (
+    emailCampaignData?.isIndividual === false ||
+    emailCampaignData?.isIndividual === null
+  ) {
+    return (
+      <EmailCampaignView
+        pageStatus={pageStatus}
+        onHandleOnboardingChoice={onHandleOnboardingChoice}
+        like={like}
+        dislike={dislike}
+        isRefresh={isRefresh}
+        isCopy={isCopy}
+        isFollowUp={isFollowUp}
+        handleLike={handleLike}
+        handleDislike={handleDislike}
+        handleIsRefresh={handleIsRefresh}
+        handleCopy={handleCopy}
+        handleFollowUp={handleFollowUp}
+        currentEmailIndex={currentEmailIndex}
+        emailCampaignData={emailCampaignData}
+        emails={emails}
+      />
+    );
+  } else {
+    return <EmailCampaignIndividualOnboardingView />;
+  }
 }

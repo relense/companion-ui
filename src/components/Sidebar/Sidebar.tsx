@@ -34,7 +34,8 @@ const Sidebar = () => {
                   params={{ campaignId: item.emailCampaignId }}
                   className={`flex flex-1 px-10 py-2 text-xl cursor-pointer hover:bg-gray-500 font-bold ${isActive(`/emailCampaigns/${item.emailCampaignId}`) ? "bg-gray-600" : ""}`}
                 >
-                  {item?.name || "Companion"}
+                  {item.isIndividual ? "I: " : "M: "}
+                  {item?.name}
                 </Link>
               );
             })}
