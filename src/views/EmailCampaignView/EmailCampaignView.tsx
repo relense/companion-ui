@@ -86,14 +86,14 @@ const EmailCampaignView = ({
 
   const renderEmail = (emailId: string, email: string) => {
     return (
-      <div className="flex flex-col text-start p-4 text-white text-lg font-semibold whitespace-pre-line gap-4">
+      <div className="flex flex-col w-full text-start p-4 text-white text-lg font-semibold whitespace-pre-line gap-4">
         <h1 className="flex items-center gap-4 text-4xl font-semibold pb-4">
           <FontAwesomeIcon
             title="Email title"
             icon={faEnvelope}
             onClick={() => handleLike()}
           />{" "}
-          First Email |
+          First Email |{" "}
           {emailCampaignData?.isIndividual ? "Individual" : " Mass"}
         </h1>
         <div className="w-full h-1 bg-gray-300 border-r-4" />
@@ -231,7 +231,7 @@ const EmailCampaignView = ({
     return (
       <div
         ref={scrollContainerRef}
-        className="max-w-10/12 w-full flex flex-1 overflow-auto scrollbar-none justify-center"
+        className="max-w-7/12 w-full flex flex-1 overflow-auto scrollbar-none justify-center"
       >
         {currentEmailIndex !== -1 && (
           <div className="flex flex-row gap-16">
