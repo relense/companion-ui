@@ -1,16 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 import PageWrapper from "../../views/PageWrapper/PageWrapper";
 import { emailServices } from "../../services/email.service";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faArrowUp,
+  faBarChart,
+  faCalendar,
+  faCircle,
   faCopy,
   faEdit,
+  faEnvelope,
+  faNoteSticky,
   faPeopleArrows,
   faRefresh,
+  faSmile,
   faThumbsDown,
   faThumbsUp,
 } from "@fortawesome/free-solid-svg-icons";
@@ -20,7 +25,7 @@ export const Route = createFileRoute("/emailCampaigns/$campaignId")({
   component: RouteComponent,
 });
 
-type Emails = {
+type Email = {
   emailId: string;
   content: string;
   createdAt: string;
@@ -40,7 +45,7 @@ function RouteComponent() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const { campaignId } = Route.useParams();
-  const [emails, setEmails] = useState<Emails[]>([]);
+  const [emails, setEmails] = useState<Email[]>([]);
   const [like, setLike] = useState<boolean>(false);
   const [dislike, setDislike] = useState<boolean>(false);
   const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -50,8 +55,7 @@ function RouteComponent() {
   const [isCopy, setIsCopy] = useState<boolean>(false);
   const [isFollowUp, setIsFollowUp] = useState<boolean>(false);
   const [isRefresh, setIsRefresh] = useState<boolean>(false);
-
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const [currentEmailIndex, setCurrentEmailIndex] = useState<number>(0);
 
   const { data: emailCampaignData, refetch: refetchEmailCampaignData } =
     useQuery({
@@ -208,6 +212,16 @@ function RouteComponent() {
   const renderEmail = (emailId: string, email: string) => {
     return (
       <div className="flex flex-col text-start p-4 text-white text-lg font-semibold whitespace-pre-line gap-4">
+        <h1 className="flex items-center gap-4 text-4xl font-semibold pb-4">
+          <FontAwesomeIcon
+            title="Email title"
+            icon={faEnvelope}
+            onClick={() => handleLike()}
+          />{" "}
+          First Email |
+          {emailCampaignData?.isIndividual ? "Individual" : " Mass"}
+        </h1>
+        <div className="w-full h-1 bg-gray-300 border-r-4" />
         {email}
         <div className="flex flex-col w-full gap-4">
           <div className="w-full h-1 bg-gray-300 border-r-4" />
@@ -255,136 +269,119 @@ function RouteComponent() {
     );
   };
 
-  const renderInput = () => {
+  const renderEmailStatus = () => {
     return (
-      <div className="flex justify-center flex-1 max-w-6xl w-full">
-        <div className="flex flex-col w-full p-3 text-sm rounded-xl bg-gray-500">
-          <textarea
-            ref={inputRef}
-            disabled={!isEdit || loadingAnswer}
-            placeholder="Message Outreach Companion"
-            className="w-full placeholder:text-gray-405 text-white outline-none resize-none max-h-50"
-            value={answer}
-            onInput={(e) => {
-              e.currentTarget.style.height = "auto";
-              e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
-            }}
-            onChange={(e) => {
-              e.preventDefault();
-              setAnswer(e.currentTarget.value);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                e.currentTarget.style.height = "auto";
-                handleNext(e.currentTarget.value);
-                setAnswer("");
-              }
-            }}
-          />
-          {isEdit && (
-            <div className="flex justify-end items-end mt-4">
-              <div
-                className="flex items-center justify-center rounded-full w-7 h-7 bg-white text-black hover:bg-gray-700 hover:text-white cursor-pointer"
-                onClick={() => {
-                  if (inputRef.current) {
-                    inputRef.current.style.height = "auto";
-                  }
-                }}
-              >
-                <FontAwesomeIcon icon={faArrowUp} />
-              </div>
+      <div className="flex w-full flex-col text-start p-4 text-white text-lg font-semibold whitespace-pre-line gap-4 ">
+        <div className="text-4xl font-semibold pb-4">
+          <FontAwesomeIcon
+            title="Email Status"
+            icon={faBarChart}
+            onClick={() => handleLike()}
+          />{" "}
+          Status
+        </div>
+        <div className="flex flex-row gap-2">
+          <div className="font-semibold min-w-fit">
+            <FontAwesomeIcon
+              title="Email Replied Status"
+              icon={faCircle}
+              onClick={() => handleLike()}
+            />{" "}
+            {emailCampaignData?.isIndividual ? "Replied:" : "Replies:"}
+          </div>
+          <div>
+            {emailCampaignData?.isIndividual ? "Yes" : `${"23"} Replies`}
+          </div>
+        </div>
+        <div className="flex flex-row gap-2">
+          <div className="font-semibold min-w-fit">
+            <FontAwesomeIcon
+              title="Email Sentiment Status"
+              icon={faSmile}
+              onClick={() => handleLike()}
+            />{" "}
+            Sentiment:
+          </div>
+          <div>Positive</div>
+        </div>
+        {emailCampaignData && emailCampaignData.isIndividual && (
+          <div className="flex flex-row gap-2">
+            <div className="font-semibold min-w-fit">
+              <FontAwesomeIcon
+                title="Email Replied Date"
+                icon={faCalendar}
+                onClick={() => handleLike()}
+              />{" "}
+              Replied on:
             </div>
-          )}
+            <div>May 13, 2025</div>
+          </div>
+        )}
+        {emailCampaignData && !emailCampaignData.isIndividual && (
+          <>
+            <div className="flex flex-row gap-2">
+              <div className="font-semibold min-w-fit">
+                <FontAwesomeIcon
+                  title="Email First Replied Date"
+                  icon={faCalendar}
+                  onClick={() => handleLike()}
+                />{" "}
+                First Reply
+              </div>
+              <div>May 13, 2025</div>
+            </div>
+            <div className="flex flex-row gap-2">
+              <div className="font-semibold min-w-fit">
+                <FontAwesomeIcon
+                  title="Email Last Replied Date"
+                  icon={faCalendar}
+                  onClick={() => handleLike()}
+                />{" "}
+                Last Reply
+              </div>
+              <div>May 13, 2025</div>
+            </div>
+          </>
+        )}
+        <div className="flex flex-row gap-2">
+          <div className="font-semibold min-w-fit">
+            <FontAwesomeIcon
+              title="Email Notes"
+              icon={faNoteSticky}
+              onClick={() => handleLike()}
+            />{" "}
+            Notes:
+          </div>
+          <div>Mentioned interest in a demo next week.</div>
         </div>
       </div>
     );
   };
 
-  const botMessagebuble = (message: string) => {
-    return (
-      <div className="flex text-start p-4 text-white text-lg font-semibold whitespace-pre-line">
-        {message}
-      </div>
-    );
-  };
-
-  const userMessageBuble = (message: string) => {
-    return (
-      <div className="flex justify-end">
-        <div className="p-4 w-fit max-w-[66%] rounded-xl text-justify bg-gray-500 text-white break-words whitespace-pre-wrap">
-          {message}
-        </div>
-      </div>
-    );
-  };
-
-  const renderConversation = () => {
+  const renderEmailOverview = () => {
     return (
       <div
         ref={scrollContainerRef}
-        className="w-full p-6 text-center overflow-auto scrollbar-none items-center flex flex-col "
+        className="max-w-6xl w-full flex flex-1 overflow-auto scrollbar-none"
       >
-        <div className="max-w-6xl w-full">
-          <div className="flex flex-col flex-1">
-            {emails &&
-              emails.map((item, index) => {
-                if (index < emails.length) {
-                  return (
-                    <Fragment key={`${item.emailId}`}>
-                      {renderEmail(item.emailId, item.content)}
-                    </Fragment>
-                  );
-                }
-              })}
+        {currentEmailIndex !== -1 && (
+          <div className="flex flex-row">
+            {renderEmail(
+              emails[currentEmailIndex].emailId,
+              emails[currentEmailIndex].content
+            )}
+            {renderEmailStatus()}
           </div>
-        </div>
-        <div className="max-w-6xl w-full">
-          <div className="flex flex-col flex-1 gap-4">
-            {questions &&
-              questions.map((question, index) => {
-                if (index < questions.length) {
-                  return (
-                    <Fragment key={`${question.content}`}>
-                      {question.role === "assistant" &&
-                        botMessagebuble(question.content)}
-                      {question.role === "user" &&
-                        userMessageBuble(question.content)}
-                    </Fragment>
-                  );
-                }
-              })}
-          </div>
-          <div ref={bottomRef} />
-        </div>
+        )}
       </div>
     );
-  };
-
-  const handleNext = (answer: string) => {
-    setLoadingAnswer(true);
-
-    const updatedQuestionsData = [...questions];
-    updatedQuestionsData.push({
-      role: "user",
-      content: answer,
-    });
-
-    setQuestions(updatedQuestionsData);
   };
 
   return (
     <PageWrapper>
       <div className="flex flex-col justify-center h-full items-center text-gray-900">
         {pageStatus === "Onboarding" && renderEmailOnboarding()}
-        {pageStatus === "Writing" && (
-          <>
-            {renderConversation()}
-            <div className="flex flex-1 w-full justify-center items-end">
-              {renderInput()}
-            </div>
-          </>
-        )}
+        {pageStatus === "Writing" && <>{renderEmailOverview()}</>}
       </div>
     </PageWrapper>
   );

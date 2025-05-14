@@ -14,7 +14,7 @@ const PageWrapper = ({
   if (auth.status === "Initializing") {
     return (
       <div className="flex flex-row h-screen bg-neutral-800 overflow-hidden">
-        <div className="flex-1 overflow-auto p-10"></div>
+        <div className="flex-1 overflow-auto pb-10 pt-4"></div>
       </div>
     );
   } else {
@@ -27,7 +27,7 @@ const PageWrapper = ({
               <Navbar />
             </div>
           )}
-          <div className="flex-1 overflow-auto p-10">{children}</div>
+          <div className="flex-1 overflow-auto pb-10 pt-4">{children}</div>
         </div>
       </div>
     );
