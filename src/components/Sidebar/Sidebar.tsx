@@ -30,11 +30,15 @@ const Sidebar = () => {
               return (
                 <Link
                   key={item.emailCampaignId}
-                  to={`/emailCampaigns/$campaignId`}
-                  params={{ campaignId: item.emailCampaignId }}
+                  to={`/emailCampaigns/$emailCampaignId`}
+                  params={{ emailCampaignId: item.emailCampaignId }}
                   className={`flex flex-1 px-10 py-2 text-xl cursor-pointer hover:bg-gray-500 font-bold ${isActive(`/emailCampaigns/${item.emailCampaignId}`) ? "bg-gray-600" : ""}`}
                 >
-                  {item.isIndividual ? "I: " : "M: "}
+                  {item.isIndividual === true
+                    ? "I: "
+                    : item.isIndividual === null
+                      ? ""
+                      : "M: "}
                   {item?.name}
                 </Link>
               );

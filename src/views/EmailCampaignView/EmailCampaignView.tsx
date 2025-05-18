@@ -15,14 +15,10 @@ import {
   faThumbsUp,
 } from "@fortawesome/free-solid-svg-icons";
 import { useRef } from "react";
-import type {
-  Email,
-  EmailCampaignPageStatus,
-} from "../../routes/emailCampaigns/$campaignId";
 import type { emailServices } from "../../services/email.service";
+import type { Email } from "../../routes/emailCampaigns/$emailCampaignId/mass";
 
 const EmailCampaignView = ({
-  onHandleOnboardingChoice,
   like,
   dislike,
   isRefresh,
@@ -33,12 +29,10 @@ const EmailCampaignView = ({
   handleIsRefresh,
   handleCopy,
   handleFollowUp,
-  pageStatus,
   currentEmailIndex,
   emailCampaignData,
   emails,
 }: {
-  onHandleOnboardingChoice: (choice: "MASS" | "INDIVIDUAL") => void;
   like: boolean;
   dislike: boolean;
   isRefresh: boolean;
@@ -49,41 +43,11 @@ const EmailCampaignView = ({
   handleIsRefresh: () => void;
   handleCopy: (emailId: string) => void;
   handleFollowUp: () => void;
-  pageStatus: EmailCampaignPageStatus;
   currentEmailIndex: number;
   emailCampaignData: Awaited<ReturnType<typeof emailServices.getEmailCampaign>>;
   emails: Email[];
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  const renderEmailOnboarding = () => {
-    return (
-      <div className="flex flex-1 w-full gap-16">
-        <div
-          className="flex flex-1 flex-col bg-neutral-600 justify-center items-center text-white text-center text-4xl cursor-pointer hover:bg-gray-700 rounded-2xl"
-          onClick={() => onHandleOnboardingChoice("MASS")}
-        >
-          <img
-            className="w-120 h-120"
-            src="/imgs/massEmail.png"
-            alt="Mass Email Logo"
-          />
-          <div>Mass Email</div>
-        </div>
-        <div
-          className="flex flex-1 flex-col bg-neutral-600 justify-center items-center text-white text-center text-4xl cursor-pointer hover:bg-gray-700 rounded-2xl"
-          onClick={() => onHandleOnboardingChoice("INDIVIDUAL")}
-        >
-          <img
-            className="w-120 h-120"
-            src="/imgs/onePerson.png"
-            alt="One Person Email Logo"
-          />
-          <div>1 Person Email</div>
-        </div>
-      </div>
-    );
-  };
 
   const renderEmail = (emailId: string, email: string) => {
     return (
@@ -242,7 +206,7 @@ const EmailCampaignView = ({
     return (
       <div
         ref={scrollContainerRef}
-        className="max-w-7/12 w-full flex flex-1 overflow-auto scrollbar-none justify-center"
+        className="max-w-11/12 3xl:max-w-9/12 w-full flex flex-1 overflow-auto scrollbar-none justify-center"
       >
         {currentEmailIndex !== -1 && emails[currentEmailIndex] && (
           <div className="flex flex-row gap-16">
@@ -259,9 +223,8 @@ const EmailCampaignView = ({
 
   return (
     <PageWrapper>
-      <div className="flex flex-col justify-center h-full items-center text-gray-900 cursor-default">
-        {pageStatus === "Onboarding" && renderEmailOnboarding()}
-        {pageStatus === "Writing" && <>{renderEmailOverview()}</>}
+      <div className="flex flex-col justify-center h-full w-full items-center text-gray-900 cursor-default">
+        {renderEmailOverview()}
       </div>
     </PageWrapper>
   );

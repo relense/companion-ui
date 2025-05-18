@@ -51,6 +51,7 @@ async function getEmailCampaign(emailCampaignId: string) {
         createdAt: response.data.createdAt,
         emails: response.data.emails,
         isIndividual: response.data.isIndividual,
+        profilerId: response.data.profilerId,
       };
     }
   } catch (error: any) {

@@ -15,7 +15,9 @@ import { Route as SignupCallbackImport } from './routes/signup-callback'
 import { Route as LoginImport } from './routes/login'
 import { Route as HomeImport } from './routes/home'
 import { Route as IndexImport } from './routes/index'
-import { Route as EmailCampaignsCampaignIdImport } from './routes/emailCampaigns/$campaignId'
+import { Route as EmailCampaignsEmailCampaignIdIndexImport } from './routes/emailCampaigns/$emailCampaignId/index'
+import { Route as EmailCampaignsEmailCampaignIdMassImport } from './routes/emailCampaigns/$emailCampaignId/mass'
+import { Route as EmailCampaignsEmailCampaignIdIndividualProfilerIdImport } from './routes/emailCampaigns/$emailCampaignId/individual/$profilerId'
 
 // Create/Update Routes
 
@@ -43,11 +45,26 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const EmailCampaignsCampaignIdRoute = EmailCampaignsCampaignIdImport.update({
-  id: '/emailCampaigns/$campaignId',
-  path: '/emailCampaigns/$campaignId',
-  getParentRoute: () => rootRoute,
-} as any)
+const EmailCampaignsEmailCampaignIdIndexRoute =
+  EmailCampaignsEmailCampaignIdIndexImport.update({
+    id: '/emailCampaigns/$emailCampaignId/',
+    path: '/emailCampaigns/$emailCampaignId/',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const EmailCampaignsEmailCampaignIdMassRoute =
+  EmailCampaignsEmailCampaignIdMassImport.update({
+    id: '/emailCampaigns/$emailCampaignId/mass',
+    path: '/emailCampaigns/$emailCampaignId/mass',
+    getParentRoute: () => rootRoute,
+  } as any)
+
+const EmailCampaignsEmailCampaignIdIndividualProfilerIdRoute =
+  EmailCampaignsEmailCampaignIdIndividualProfilerIdImport.update({
+    id: '/emailCampaigns/$emailCampaignId/individual/$profilerId',
+    path: '/emailCampaigns/$emailCampaignId/individual/$profilerId',
+    getParentRoute: () => rootRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -81,11 +98,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupCallbackImport
       parentRoute: typeof rootRoute
     }
-    '/emailCampaigns/$campaignId': {
-      id: '/emailCampaigns/$campaignId'
-      path: '/emailCampaigns/$campaignId'
-      fullPath: '/emailCampaigns/$campaignId'
-      preLoaderRoute: typeof EmailCampaignsCampaignIdImport
+    '/emailCampaigns/$emailCampaignId/mass': {
+      id: '/emailCampaigns/$emailCampaignId/mass'
+      path: '/emailCampaigns/$emailCampaignId/mass'
+      fullPath: '/emailCampaigns/$emailCampaignId/mass'
+      preLoaderRoute: typeof EmailCampaignsEmailCampaignIdMassImport
+      parentRoute: typeof rootRoute
+    }
+    '/emailCampaigns/$emailCampaignId/': {
+      id: '/emailCampaigns/$emailCampaignId/'
+      path: '/emailCampaigns/$emailCampaignId'
+      fullPath: '/emailCampaigns/$emailCampaignId'
+      preLoaderRoute: typeof EmailCampaignsEmailCampaignIdIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/emailCampaigns/$emailCampaignId/individual/$profilerId': {
+      id: '/emailCampaigns/$emailCampaignId/individual/$profilerId'
+      path: '/emailCampaigns/$emailCampaignId/individual/$profilerId'
+      fullPath: '/emailCampaigns/$emailCampaignId/individual/$profilerId'
+      preLoaderRoute: typeof EmailCampaignsEmailCampaignIdIndividualProfilerIdImport
       parentRoute: typeof rootRoute
     }
   }
@@ -98,7 +129,9 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/signup-callback': typeof SignupCallbackRoute
-  '/emailCampaigns/$campaignId': typeof EmailCampaignsCampaignIdRoute
+  '/emailCampaigns/$emailCampaignId/mass': typeof EmailCampaignsEmailCampaignIdMassRoute
+  '/emailCampaigns/$emailCampaignId': typeof EmailCampaignsEmailCampaignIdIndexRoute
+  '/emailCampaigns/$emailCampaignId/individual/$profilerId': typeof EmailCampaignsEmailCampaignIdIndividualProfilerIdRoute
 }
 
 export interface FileRoutesByTo {
@@ -106,7 +139,9 @@ export interface FileRoutesByTo {
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/signup-callback': typeof SignupCallbackRoute
-  '/emailCampaigns/$campaignId': typeof EmailCampaignsCampaignIdRoute
+  '/emailCampaigns/$emailCampaignId/mass': typeof EmailCampaignsEmailCampaignIdMassRoute
+  '/emailCampaigns/$emailCampaignId': typeof EmailCampaignsEmailCampaignIdIndexRoute
+  '/emailCampaigns/$emailCampaignId/individual/$profilerId': typeof EmailCampaignsEmailCampaignIdIndividualProfilerIdRoute
 }
 
 export interface FileRoutesById {
@@ -115,7 +150,9 @@ export interface FileRoutesById {
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/signup-callback': typeof SignupCallbackRoute
-  '/emailCampaigns/$campaignId': typeof EmailCampaignsCampaignIdRoute
+  '/emailCampaigns/$emailCampaignId/mass': typeof EmailCampaignsEmailCampaignIdMassRoute
+  '/emailCampaigns/$emailCampaignId/': typeof EmailCampaignsEmailCampaignIdIndexRoute
+  '/emailCampaigns/$emailCampaignId/individual/$profilerId': typeof EmailCampaignsEmailCampaignIdIndividualProfilerIdRoute
 }
 
 export interface FileRouteTypes {
@@ -125,21 +162,27 @@ export interface FileRouteTypes {
     | '/home'
     | '/login'
     | '/signup-callback'
-    | '/emailCampaigns/$campaignId'
+    | '/emailCampaigns/$emailCampaignId/mass'
+    | '/emailCampaigns/$emailCampaignId'
+    | '/emailCampaigns/$emailCampaignId/individual/$profilerId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/home'
     | '/login'
     | '/signup-callback'
-    | '/emailCampaigns/$campaignId'
+    | '/emailCampaigns/$emailCampaignId/mass'
+    | '/emailCampaigns/$emailCampaignId'
+    | '/emailCampaigns/$emailCampaignId/individual/$profilerId'
   id:
     | '__root__'
     | '/'
     | '/home'
     | '/login'
     | '/signup-callback'
-    | '/emailCampaigns/$campaignId'
+    | '/emailCampaigns/$emailCampaignId/mass'
+    | '/emailCampaigns/$emailCampaignId/'
+    | '/emailCampaigns/$emailCampaignId/individual/$profilerId'
   fileRoutesById: FileRoutesById
 }
 
@@ -148,7 +191,9 @@ export interface RootRouteChildren {
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
   SignupCallbackRoute: typeof SignupCallbackRoute
-  EmailCampaignsCampaignIdRoute: typeof EmailCampaignsCampaignIdRoute
+  EmailCampaignsEmailCampaignIdMassRoute: typeof EmailCampaignsEmailCampaignIdMassRoute
+  EmailCampaignsEmailCampaignIdIndexRoute: typeof EmailCampaignsEmailCampaignIdIndexRoute
+  EmailCampaignsEmailCampaignIdIndividualProfilerIdRoute: typeof EmailCampaignsEmailCampaignIdIndividualProfilerIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -156,7 +201,12 @@ const rootRouteChildren: RootRouteChildren = {
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
   SignupCallbackRoute: SignupCallbackRoute,
-  EmailCampaignsCampaignIdRoute: EmailCampaignsCampaignIdRoute,
+  EmailCampaignsEmailCampaignIdMassRoute:
+    EmailCampaignsEmailCampaignIdMassRoute,
+  EmailCampaignsEmailCampaignIdIndexRoute:
+    EmailCampaignsEmailCampaignIdIndexRoute,
+  EmailCampaignsEmailCampaignIdIndividualProfilerIdRoute:
+    EmailCampaignsEmailCampaignIdIndividualProfilerIdRoute,
 }
 
 export const routeTree = rootRoute
@@ -173,7 +223,9 @@ export const routeTree = rootRoute
         "/home",
         "/login",
         "/signup-callback",
-        "/emailCampaigns/$campaignId"
+        "/emailCampaigns/$emailCampaignId/mass",
+        "/emailCampaigns/$emailCampaignId/",
+        "/emailCampaigns/$emailCampaignId/individual/$profilerId"
       ]
     },
     "/": {
@@ -188,8 +240,14 @@ export const routeTree = rootRoute
     "/signup-callback": {
       "filePath": "signup-callback.tsx"
     },
-    "/emailCampaigns/$campaignId": {
-      "filePath": "emailCampaigns/$campaignId.tsx"
+    "/emailCampaigns/$emailCampaignId/mass": {
+      "filePath": "emailCampaigns/$emailCampaignId/mass.tsx"
+    },
+    "/emailCampaigns/$emailCampaignId/": {
+      "filePath": "emailCampaigns/$emailCampaignId/index.tsx"
+    },
+    "/emailCampaigns/$emailCampaignId/individual/$profilerId": {
+      "filePath": "emailCampaigns/$emailCampaignId/individual/$profilerId.tsx"
     }
   }
 }

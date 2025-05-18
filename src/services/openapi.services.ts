@@ -58,11 +58,30 @@ async function generateMoreHistory(
   return response.data;
 }
 
+async function generateMoreProfiler(
+  body: ClientApi.SendProfilerMessages.Config["requestBody"]
+): Promise<ClientApi.SendProfilerMessages.Responses.$200> {
+  const token = localStorage.getItem("tempNovaToken");
+  const response =
+    await clientAxiosClient.post<ClientApi.SendProfilerMessages.Responses.$200>(
+      "/gpt/profiler",
+      body,
+      {
+        headers: {
+          apikey: token,
+        },
+      }
+    );
+
+  return response.data;
+}
+
 const openaiServices = {
   getInitialMessage,
   sendMessage,
   sendMessageAndSave,
   generateMoreHistory,
+  generateMoreProfiler,
 };
 
 export { openaiServices };
