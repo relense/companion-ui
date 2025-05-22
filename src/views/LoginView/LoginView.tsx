@@ -89,15 +89,13 @@ const LoginView = ({
 
   const renderLogin = () => {
     return (
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col p-4 pb-10 pt-4">
         <div className="items-center flex gap-2 cursor-pointer">
           <img
             className="w-32 h-32"
             src="/imgs/logo.png"
             alt="Companion Logo"
           />
-
-          <div className="text-5xl text-white">Companion</div>
         </div>
         <div className="flex flex-1 flex-col gap-16 justify-center">
           <div className="flex w-full flex-col gap-10 text-white font-medium text-center">
@@ -115,7 +113,7 @@ const LoginView = ({
           {renderInputs()}
           <div className="flex justify-start">
             <div className="flex flex-1 w-full flex-col">
-              <div className="flex gap-1 w-3/6 text-2xl text-white font-medium ">
+              <div className="flex gap-1 w-3/6 text-2xl text-white font-medium pl-2 ">
                 {mode === "login" ? (
                   <div>Have an account?</div>
                 ) : (
@@ -137,12 +135,21 @@ const LoginView = ({
   };
 
   return (
-    <PageWrapper isNavbar={false}>
-      <div className="flex h-full justify-center">
-        {renderLogin()}
-        <div className="flex flex-1 flex-col gap-4 bg-green-500"></div>
+    <div className="flex flex-row h-screen bg-neutral-800 overflow-hidden">
+      <div className="flex flex-col w-full">
+        <div className="flex-1 overflow-auto">
+          <div className="flex h-full justify-center">
+            {renderLogin()}
+            <div
+              className="w-1/2 bg-center bg-contain"
+              style={{
+                backgroundImage: "url('/imgs/background.png')",
+              }}
+            />
+          </div>
+        </div>
       </div>
-    </PageWrapper>
+    </div>
   );
 };
 

@@ -5,8 +5,6 @@ import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
 import PageWrapper from "../PageWrapper/PageWrapper";
 import type { Question } from "../../utils/prompts";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { openaiServices } from "../../services/openapi.services";
 
 const EmailCampaignIndividualOnboardingView = ({
   handleNext,
@@ -22,20 +20,6 @@ const EmailCampaignIndividualOnboardingView = ({
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const [answer, setAnswer] = useState<string>("");
-
-  const { data } = useQuery({
-    queryKey: ["profiler"],
-    queryFn: openaiServices.getInitialMessage,
-    enabled: false,
-  });
-
-  // const { mutate: generateMoreHistory } = useMutation({
-  //   mutationFn: (params: { messages: Question[] }) =>
-  //     openaiServices.generateMoreProfiler({
-  //       messages: params.questions,
-  //       profilerId: params.profilerId,
-  //     }),
-  // });
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });

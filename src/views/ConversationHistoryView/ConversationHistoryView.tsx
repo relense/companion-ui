@@ -113,12 +113,6 @@ const ConversationHistoryView = ({
                 >
                   Generate Email
                 </button>
-                <button
-                  className="text-white bg-blue-500 rounded-lg font-medium p-2 cursor-pointer hover:bg-blue-600"
-                  onClick={() => console.log("CLick")}
-                >
-                  Generate Linkedin
-                </button>
               </div>
             )}
 

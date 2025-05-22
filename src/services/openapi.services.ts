@@ -59,11 +59,11 @@ async function generateMoreHistory(
 }
 
 async function generateMoreProfiler(
-  body: ClientApi.SendProfilerMessages.Config["requestBody"]
-): Promise<ClientApi.SendProfilerMessages.Responses.$200> {
+  body: ClientApi.SendProfilerMessage.Config["requestBody"]
+): Promise<ClientApi.SendProfilerMessage.Responses.$200> {
   const token = localStorage.getItem("tempNovaToken");
   const response =
-    await clientAxiosClient.post<ClientApi.SendProfilerMessages.Responses.$200>(
+    await clientAxiosClient.post<ClientApi.SendProfilerMessage.Responses.$200>(
       "/gpt/profiler",
       body,
       {

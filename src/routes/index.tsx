@@ -35,7 +35,6 @@ export default function App() {
     queryKey: ["initialMessage"],
     queryFn: openaiServices.getInitialMessage,
     enabled: false,
-    staleTime: 0,
   });
 
   const { mutate: sendMessageMutate } = useMutation({
@@ -46,75 +45,84 @@ export default function App() {
   });
 
   useEffect(() => {
-    if (auth.status === "Authenticated") {
+    if (auth.status === "Unauthenticated") {
+      setAppStatus("Onboarding");
+    } else if (auth.status === "Initializing") {
+      auth.checkUserSession();
+    } else {
       navigate({ to: "/home" });
     }
   }, [auth.status]);
 
   useEffect(() => {
-    if (auth.status === "Unauthenticated") {
+    if (appStatus === "Onboarding" && auth.status === "Unauthenticated") {
       const conversation = localStorage.getItem("userMessages");
 
       if (conversation && !conversation.includes("<ONBOARDING_COMPLETE>")) {
-        sendMessageMutate(
-          { messages: JSON.parse(conversation) },
-          {
-            onSuccess: (response) => {
-              if (
-                response.choices[0].message.content &&
-                response.choices[0].message.content.includes(
-                  "<ONBOARDING_COMPLETE>"
-                )
-              ) {
-                setShowGeneratorButtons(true);
+        const parsedConversation: Question[] = JSON.parse(conversation);
+        if (parsedConversation[parsedConversation.length - 1].role === "user") {
+          sendMessageMutate(
+            { messages: JSON.parse(conversation) },
+            {
+              onSuccess: (response) => {
+                if (
+                  response.choices[0].message.content &&
+                  response.choices[0].message.content.includes(
+                    "<ONBOARDING_COMPLETE>"
+                  )
+                ) {
+                  setShowGeneratorButtons(true);
 
-                setQuestions(() => [
-                  ...JSON.parse(conversation),
-                  {
-                    role: "assistant",
-                    content: response.choices[0].message.content,
-                  },
-                ]);
-              } else {
-                setQuestions(() => [
-                  ...JSON.parse(conversation),
-                  {
-                    role: "assistant",
-                    content: response.choices[0].message.content || "",
-                  },
-                ]);
-              }
+                  setQuestions(() => [
+                    ...JSON.parse(conversation),
+                    {
+                      role: "assistant",
+                      content: response.choices[0].message.content,
+                    },
+                  ]);
+                } else {
+                  setQuestions(() => [
+                    ...JSON.parse(conversation),
+                    {
+                      role: "assistant",
+                      content: response.choices[0].message.content || "",
+                    },
+                  ]);
+                }
 
-              localStorage.setItem(
-                "userMessages",
-                JSON.stringify([
-                  ...JSON.parse(conversation),
-                  {
-                    role: "assistant",
-                    content: response.choices[0].message.content,
-                  },
-                ])
-              );
+                localStorage.setItem(
+                  "userMessages",
+                  JSON.stringify([
+                    ...JSON.parse(conversation),
+                    {
+                      role: "assistant",
+                      content: response.choices[0].message.content,
+                    },
+                  ])
+                );
 
-              setAppStatus("Onboarding");
+                setAppStatus("Onboarding");
 
-              setLoadingAnswer(false);
-            },
-          }
-        );
+                setLoadingAnswer(false);
+              },
+            }
+          );
+        } else {
+          setQuestions(JSON.parse(conversation));
+          setLoadingAnswer(false);
+        }
       } else if (
         conversation &&
         conversation.includes("<ONBOARDING_COMPLETE>")
       ) {
         setQuestions(JSON.parse(conversation));
         setShowGeneratorButtons(true);
-        setAppStatus("Onboarding");
         setLoadingAnswer(false);
       } else {
-        refetchInitialMessage();
+        if (questions[0].content === "") refetchInitialMessage();
       }
     }
-  }, [auth]);
+  }, [auth, appStatus]);
 
   useEffect(() => {
     if (data && data.choices) {

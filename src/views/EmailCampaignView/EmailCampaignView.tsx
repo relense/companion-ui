@@ -204,30 +204,26 @@ const EmailCampaignView = ({
 
   const renderEmailOverview = () => {
     return (
-      <div
-        ref={scrollContainerRef}
-        className="max-w-11/12 3xl:max-w-9/12 w-full flex flex-1 overflow-auto scrollbar-none justify-center"
-      >
-        {currentEmailIndex !== -1 && emails[currentEmailIndex] && (
-          <div className="flex flex-row gap-16">
-            {renderEmail(
-              emails[currentEmailIndex].emailId,
-              emails[currentEmailIndex].content
-            )}
-            {renderEmailStatus()}
-          </div>
-        )}
+      <div className="flex flex-col justify-center h-full w-full items-center text-gray-900 cursor-default">
+        <div
+          ref={scrollContainerRef}
+          className="max-w-7/12 2xl:max-w-11/12 w-full flex flex-1 overflow-auto scrollbar-none justify-center"
+        >
+          {currentEmailIndex !== -1 && emails[currentEmailIndex] && (
+            <div className="flex flex-row gap-16">
+              {renderEmail(
+                emails[currentEmailIndex].emailId,
+                emails[currentEmailIndex].content
+              )}
+              {renderEmailStatus()}
+            </div>
+          )}
+        </div>
       </div>
     );
   };
 
-  return (
-    <PageWrapper>
-      <div className="flex flex-col justify-center h-full w-full items-center text-gray-900 cursor-default">
-        {renderEmailOverview()}
-      </div>
-    </PageWrapper>
-  );
+  return <PageWrapper>{renderEmailOverview()}</PageWrapper>;
 };
 
 export default EmailCampaignView;

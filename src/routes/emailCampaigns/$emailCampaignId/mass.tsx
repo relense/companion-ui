@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import EmailCampaignView from "../../../views/EmailCampaignView/EmailCampaignView";
 import { useEffect, useState } from "react";
-
 import { useQuery } from "@tanstack/react-query";
+
+import EmailCampaignView from "../../../views/EmailCampaignView/EmailCampaignView";
 import { emailServices } from "../../../services/email.service";
 
 export const Route = createFileRoute("/emailCampaigns/$emailCampaignId/mass")({
