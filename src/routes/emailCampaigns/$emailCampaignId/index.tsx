@@ -11,7 +11,9 @@ export const Route = createFileRoute("/emailCampaigns/$emailCampaignId/")({
 });
 
 function RouteComponent() {
-  const [pageStatus, setPageStatus] = useState<"LOADING" | "IDLE">("LOADING");
+  const [pageStatus, setPageStatus] = useState<
+    "Loading" | "Idle" | "LoadingEmail"
+  >("Loading");
   const { emailCampaignId } = Route.useParams();
   const navigate = useNavigate();
 
@@ -55,7 +57,7 @@ function RouteComponent() {
           },
         });
       } else {
-        setPageStatus("IDLE");
+        setPageStatus("Idle");
       }
     }
   }, [emailCampaignData, emailCampaignData?.emailCampaignId]);
@@ -65,15 +67,19 @@ function RouteComponent() {
       isIndividual: choice === "MASS" ? false : true,
       name: emailCampaignData?.name || "",
     });
+
+    setPageStatus("LoadingEmail");
   };
 
-  if (pageStatus === "IDLE") {
+  if (pageStatus === "Idle") {
     return (
       <EmailOnboardingView
         onHandleOnboardingChoice={onHandleOnboardingChoice}
       />
     );
-  } else {
+  } else if (pageStatus === "Loading") {
     return <LoadingView />;
+  } else if (pageStatus === "LoadingEmail") {
+    return <LoadingView message={"We are crafting your email"} />;
   }
 }

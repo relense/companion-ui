@@ -153,6 +153,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     try {
       localStorage.removeItem("tempNovaToken");
       await supabaseServices.signout();
+      navigate({ to: "/" });
 
       setStatus("Unauthenticated");
     } catch (error) {

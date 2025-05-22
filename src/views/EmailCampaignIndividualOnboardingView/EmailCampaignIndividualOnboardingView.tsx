@@ -1,10 +1,11 @@
 import { Fragment } from "react/jsx-runtime";
 import { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { faArrowUp, faSquare } from "@fortawesome/free-solid-svg-icons";
 
 import PageWrapper from "../PageWrapper/PageWrapper";
 import type { Question } from "../../utils/prompts";
+import Spinner from "../../components/Spinner/Spinner";
 
 const EmailCampaignIndividualOnboardingView = ({
   handleNext,
@@ -74,7 +75,7 @@ const EmailCampaignIndividualOnboardingView = ({
   const renderInput = () => {
     return (
       <div className="flex justify-center flex-col max-w-6xl w-full">
-        {loadingAnswer && <div className="text-white">spinner</div>}
+        {loadingAnswer && <Spinner />}
         <div className="flex flex-col p-3 text-sm rounded-xl bg-gray-500">
           <textarea
             disabled={loadingAnswer}
@@ -99,16 +100,39 @@ const EmailCampaignIndividualOnboardingView = ({
               }
             }}
           />
-          <div
-            className="flex self-end items-center justify-center rounded-full w-7 h-7 bg-white text-black hover:bg-gray-700 hover:text-white cursor-pointer"
-            onClick={() => {
-              if (inputRef.current) {
-                inputRef.current.style.height = "auto";
-              }
-              handleNext(answer);
-            }}
-          >
-            <FontAwesomeIcon icon={faArrowUp} />
+
+          <div className="flex flex-1 justify-end">
+            {!loadingAnswer ? (
+              <button
+                className={`flex items-center justify-center rounded-full w-7 h-7  ${!loadingAnswer && answer === "" ? "bg-gray-400 text-gray-600" : "bg-white text-black hover:bg-gray-700 hover:text-white cursor-pointer"}`}
+                disabled={!loadingAnswer && answer === ""}
+                onClick={() => {
+                  if (inputRef.current) {
+                    inputRef.current.style.height = "auto";
+                  }
+                  if (!loadingAnswer && answer !== "") {
+                    handleNext(answer);
+                    setAnswer("");
+                  }
+                }}
+              >
+                <FontAwesomeIcon icon={faArrowUp} />
+              </button>
+            ) : (
+              <button
+                className={`flex items-center justify-center rounded-full w-7 h-7 bg-white text-black hover:bg-gray-700 hover:text-white cursor-pointer`}
+                onClick={() => {
+                  if (inputRef.current) {
+                    inputRef.current.style.height = "auto";
+                  }
+                  // if (!loadingAnswer && answer !== "") {
+                  //   handleNext(answer);
+                  // }
+                }}
+              >
+                <FontAwesomeIcon icon={faSquare} />
+              </button>
+            )}
           </div>
         </div>
       </div>

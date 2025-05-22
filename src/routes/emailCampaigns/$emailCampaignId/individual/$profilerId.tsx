@@ -65,6 +65,7 @@ function ProfilerId() {
       });
 
       setQuestions(newQuestions);
+      setLoadingAnswer(false);
     },
   });
 
@@ -126,7 +127,6 @@ function ProfilerId() {
     });
 
     setQuestions(updatedQuestionsData);
-    setLoadingAnswer(false);
   };
 
   const handleLike = () => {
