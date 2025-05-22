@@ -1,9 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Fragment, useEffect, useRef, useState } from "react";
-import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { faArrowUp, faSquare } from "@fortawesome/free-solid-svg-icons";
 
 import type { Question } from "../../utils/prompts";
 import PageWrapper from "../PageWrapper/PageWrapper";
+import Spinner from "../../components/Spinner/Spinner";
 
 const ConversationHistoryView = ({
   handleNext,
@@ -79,7 +80,7 @@ const ConversationHistoryView = ({
   const renderInput = () => {
     return (
       <div className="flex justify-center flex-col max-w-6xl w-full">
-        {loadingAnswer && <div className="text-white">spinner</div>}
+        {loadingAnswer && <Spinner />}
         <div className="flex flex-col p-3 text-sm rounded-xl bg-gray-500">
           <textarea
             disabled={loadingAnswer}
@@ -99,8 +100,11 @@ const ConversationHistoryView = ({
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 e.currentTarget.style.height = "auto";
-                handleNext(e.currentTarget.value);
-                setAnswer("");
+
+                if (!loadingAnswer && answer !== "") {
+                  handleNext(e.currentTarget.value);
+                  setAnswer("");
+                }
               }
             }}
           />
@@ -110,6 +114,7 @@ const ConversationHistoryView = ({
                 <button
                   className="text-white bg-blue-500 rounded-lg font-medium p-2 cursor-pointer hover:bg-blue-600"
                   onClick={() => generateEmail()}
+                  disabled={loadingAnswer}
                 >
                   Generate Email
                 </button>
@@ -117,17 +122,37 @@ const ConversationHistoryView = ({
             )}
 
             <div className="flex items-end">
-              <div
-                className="flex items-center justify-center rounded-full w-7 h-7 bg-white text-black hover:bg-gray-700 hover:text-white cursor-pointer"
-                onClick={() => {
-                  if (inputRef.current) {
-                    inputRef.current.style.height = "auto";
-                  }
-                  handleNext(answer);
-                }}
-              >
-                <FontAwesomeIcon icon={faArrowUp} />
-              </div>
+              {!loadingAnswer ? (
+                <button
+                  className={`flex items-center justify-center rounded-full w-7 h-7  ${!loadingAnswer && answer === "" ? "bg-gray-400 text-gray-600" : "bg-white text-black hover:bg-gray-700 hover:text-white cursor-pointer"}`}
+                  disabled={!loadingAnswer && answer === ""}
+                  onClick={() => {
+                    if (inputRef.current) {
+                      inputRef.current.style.height = "auto";
+                    }
+                    if (!loadingAnswer && answer !== "") {
+                      handleNext(answer);
+                      setAnswer("");
+                    }
+                  }}
+                >
+                  <FontAwesomeIcon icon={faArrowUp} />
+                </button>
+              ) : (
+                <button
+                  className={`flex items-center justify-center rounded-full w-7 h-7 bg-white text-black hover:bg-gray-700 hover:text-white cursor-pointer`}
+                  onClick={() => {
+                    if (inputRef.current) {
+                      inputRef.current.style.height = "auto";
+                    }
+                    // if (!loadingAnswer && answer !== "") {
+                    //   handleNext(answer);
+                    // }
+                  }}
+                >
+                  <FontAwesomeIcon icon={faSquare} />
+                </button>
+              )}
             </div>
           </div>
         </div>

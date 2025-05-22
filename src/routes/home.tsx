@@ -8,6 +8,7 @@ import ConversationHistoryView from "../views/ConversationHistoryView/Conversati
 import { useAuth } from "../hooks/useAuth";
 import { emailServices } from "../services/email.service";
 import { useGlobal } from "../hooks/useGlobal";
+import LoadingView from "../views/LoadingView/LoadingView";
 
 export const Route = createFileRoute("/home")({
   component: Home,
@@ -200,21 +201,27 @@ export default function Home() {
   };
 
   const generateEmail = async () => {
+    setLoadingAnswer(true);
     const response = await emailServices.createEmailCampaign(
       global.currentCompanionId || ""
     );
 
     navigate({ to: `/emailCampaigns/${response.emailCampaignId}` });
+    setLoadingAnswer(false);
   };
 
-  return (
-    <ConversationHistoryView
-      handleNext={companionHasOnBoarding ? handleNext : handleNextOnboarding}
-      questions={questions}
-      loadingAnswer={loadingAnswer}
-      pageStatus={pageStatus}
-      companionHasOnBoarding={companionHasOnBoarding}
-      generateEmail={generateEmail}
-    />
-  );
+  if (pageStatus === "Idle") {
+    return (
+      <ConversationHistoryView
+        handleNext={companionHasOnBoarding ? handleNext : handleNextOnboarding}
+        questions={questions}
+        loadingAnswer={loadingAnswer}
+        pageStatus={pageStatus}
+        companionHasOnBoarding={companionHasOnBoarding}
+        generateEmail={generateEmail}
+      />
+    );
+  } else {
+    return <LoadingView />;
+  }
 }

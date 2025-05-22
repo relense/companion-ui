@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PageWrapper from "../PageWrapper/PageWrapper";
 import type { Question } from "../../utils/prompts";
 import { Link } from "@tanstack/react-router";
+import Spinner from "../../components/Spinner/Spinner";
 
 const OnBoardingView = ({
   questions,
@@ -100,7 +101,7 @@ const OnBoardingView = ({
   const renderInput = () => {
     return (
       <div className="flex justify-center flex-col max-w-6xl w-full">
-        {loadingAnswer && <div className="text-white">spinner</div>}
+        {loadingAnswer && <Spinner />}
         <div className="p-3 text-sm rounded-xl bg-gray-500">
           <textarea
             disabled={loadingAnswer || showGeneratorButtons}
